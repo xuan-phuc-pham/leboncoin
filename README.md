@@ -1,4 +1,9 @@
 Project: Leboincoin
 ===
 
-Vous avez besoin que import sur intellij, add Tomcat server et utilisez tout de suite 
+Vous avez besoin que
+- Git clone
+- Import sur intellij
+- Add Tomcat server
+- Utiliser tout de suite 
+
