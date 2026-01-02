@@ -1,23 +1,42 @@
 package config;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
-import jakarta.servlet.ServletContext;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @EnableWebMvc
-    @Configuration
-    @ComponentScan(basePackages = {"controllers","services"})
-    public class ClientWebConfig implements WebMvcConfigurer {
+@Configuration
+@ComponentScan(basePackages = {"controllers","services"})
+@EnableTransactionManagement
+public class ClientWebConfig implements WebMvcConfigurer {
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+                .addResourceHandler("/images/**")
+                .addResourceLocations("/images/");
+    }
 
     @Bean
     @Description("Thymeleaf Template Resolver")
@@ -59,4 +78,57 @@ import jakarta.servlet.ServletContext;
 
      */
 
+    @Bean
+    public DataSource dataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        EmbeddedDatabase db = builder
+                .setType(EmbeddedDatabaseType.H2) //.H2 or .DERBY
+//                .addScript("db/sql/create-db.sql")   // dans resources
+                .build();
+        return db;
     }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean em
+                = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSource());
+        em.setPackagesToScan(new String[] { "entities" });
+
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        em.setJpaProperties(additionalProperties());
+
+        return em;
+    }
+
+    Properties additionalProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        properties.setProperty(
+                "hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        properties.setProperty("hibernate.hbm2ddl.import_files" ,"insert-data.sql");
+        return properties;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(
+            EntityManagerFactory emf){
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+
+        return transactionManager;
+    }
+
+/*
+    @Bean
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+        return new PersistenceExceptionTranslationPostProcessor();
+    }
+
+
+ */
+
+
+
+}
