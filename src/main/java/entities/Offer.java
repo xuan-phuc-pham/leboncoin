@@ -21,7 +21,7 @@ public class Offer {
     @ManyToMany
     private Set<Category> of_categories;
 
-    @OneToMany(mappedBy = "de_offer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "w_offer", fetch = FetchType.EAGER)
     private List<Wish> of_wishes;
 
     @Enumerated(EnumType.STRING)

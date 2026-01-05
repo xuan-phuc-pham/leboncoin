@@ -8,62 +8,62 @@ import type.DemandStatus;
 public class Wish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int de_id;
+    private int w_id;
 
-    private LocalDateTime de_date;
+    private LocalDateTime w_date;
 
     @Enumerated(EnumType.STRING)
-    private DemandStatus de_status;
+    private DemandStatus w_status;
 
     @ManyToOne
-    private Offer de_offer;
+    private Offer w_offer;
 
     @ManyToOne
-    private Member de_member;
+    private Member w_member;
 
     public Wish() {
     }
 
-    public Wish(LocalDateTime de_date, DemandStatus de_status, Offer de_offer, Member de_member) {
-        this.de_date = de_date;
-        this.de_status = de_status;
-        this.de_offer = de_offer;
-        this.de_member = de_member;
+    public Wish(LocalDateTime w_date, DemandStatus w_status, Offer w_offer, Member w_member) {
+        this.w_date = w_date;
+        this.w_status = w_status;
+        this.w_offer = w_offer;
+        this.w_member = w_member;
     }
 
     public int getDe_id() {
-        return de_id;
+        return w_id;
     }
 
     public LocalDateTime getDe_date() {
-        return de_date;
+        return w_date;
     }
 
-    public void setDe_date(LocalDateTime de_date) {
-        this.de_date = de_date;
+    public void setDe_date(LocalDateTime w_date) {
+        this.w_date = w_date;
     }
 
     public DemandStatus getDe_status() {
-        return de_status;
+        return w_status;
     }
 
-    public void setDe_status(DemandStatus de_status) {
-        this.de_status = de_status;
+    public void setDe_status(DemandStatus w_status) {
+        this.w_status = w_status;
     }
 
     public Offer getDe_offer() {
-        return de_offer;
+        return w_offer;
     }
 
-    public void setDe_offer(Offer de_offer) {
-        this.de_offer = de_offer;
+    public void setDe_offer(Offer w_offer) {
+        this.w_offer = w_offer;
     }
 
     public Member getDe_member() {
-        return de_member;
+        return w_member;
     }
 
-    public void setDe_member(Member de_member) {
-        this.de_member = de_member;
+    public void setDe_member(Member w_member) {
+        this.w_member = w_member;
     }
 }

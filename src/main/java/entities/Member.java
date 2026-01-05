@@ -24,7 +24,7 @@ public class Member {
     @JoinColumn(nullable = false)
     private Organization m_organization;
 
-    @OneToMany(mappedBy = "de_member", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "w_member", fetch = FetchType.EAGER)
     private List<Wish> m_wishes;
 
     public Member() {
