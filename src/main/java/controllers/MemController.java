@@ -110,7 +110,7 @@ public class MemController {
             int of_id = ds.of_id();
             int mem_id = (Integer)model.getAttribute("courant");
             if( !facade.alreadySubmitted(mem_id, of_id) && !facade.isMemberInOrganisation(mem_id, of_id)){
-                facade.demande(mem_id, of_id);
+                facade.wish(mem_id, of_id);
                 return "redirect:offer/detail/"+of_id;
             } else{
                 return "redirect:offer/detail/"+of_id;

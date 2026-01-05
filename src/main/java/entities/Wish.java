@@ -31,39 +31,39 @@ public class Wish {
         this.w_member = w_member;
     }
 
-    public int getDe_id() {
+    public int getW_id() {
         return w_id;
     }
 
-    public LocalDateTime getDe_date() {
+    public LocalDateTime getW__date() {
         return w_date;
     }
 
-    public void setDe_date(LocalDateTime w_date) {
+    public void setW_date(LocalDateTime w_date) {
         this.w_date = w_date;
     }
 
-    public WishStatus getDe_status() {
+    public WishStatus getW_status() {
         return w_status;
     }
 
-    public void setDe_status(WishStatus w_status) {
+    public void setW_status(WishStatus w_status) {
         this.w_status = w_status;
     }
 
-    public Offer getDe_offer() {
+    public Offer getW_offer() {
         return w_offer;
     }
 
-    public void setDe_offer(Offer w_offer) {
+    public void setW_offer(Offer w_offer) {
         this.w_offer = w_offer;
     }
 
-    public Member getDe_member() {
+    public Member getW_member() {
         return w_member;
     }
 
-    public void setDe_member(Member w_member) {
+    public void setW_member(Member w_member) {
         this.w_member = w_member;
     }
 }

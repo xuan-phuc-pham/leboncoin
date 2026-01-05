@@ -85,34 +85,34 @@ public class MemFacade {
 
     public WishInfo getDemandInfo(int demand_id){
         Wish de = em.find(Wish.class,demand_id);
-        Member m = de.getDe_member();
+        Member m = de.getW_member();
         Organization o = m.getM_organisation();
-        Offer of = de.getDe_offer();
+        Offer of = de.getW_offer();
         return new WishInfo(
                 demand_id,
                 m.getM_id(),
                 of.getOf_id(),
                 m.getM_firstName()+" "+m.getM_lastName(),
                 o.getO_name(),
-                de.getDe_status().toString()
+                de.getW_status().toString()
         );
     }
 
     public List<WishInfo> getDemandsInfo(List<Wish> demands){
-        List<WishInfo> list_demande = demands.stream()
+        List<WishInfo> list_wishes = demands.stream()
                 .map(de -> new WishInfo(
-                        de.getDe_id(),
-                        de.getDe_member().getM_id(),
-                        de.getDe_offer().getOf_id(),
-                        de.getDe_member().getM_firstName()+" "+ de.getDe_member().getM_lastName(),
-                        de.getDe_member().getM_organisation().getO_name(),
-                        de.getDe_status().toString()
+                        de.getW_id(),
+                        de.getW_member().getM_id(),
+                        de.getW_offer().getOf_id(),
+                        de.getW_member().getM_firstName()+" "+ de.getW_member().getM_lastName(),
+                        de.getW_member().getM_organisation().getO_name(),
+                        de.getW_status().toString()
                 )).toList();
-        return list_demande;
+        return list_wishes;
     }
 
     @Transactional
-    public boolean demande(int mem_id, int of_id){
+    public boolean wish(int mem_id, int of_id){
         if(!isMemberInOrganisation(mem_id, of_id)) {//
             Member m = em.find(Member.class,mem_id);
             Offer o = em.find(Offer.class,of_id);
