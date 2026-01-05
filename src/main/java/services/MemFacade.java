@@ -16,6 +16,8 @@ import java.util.*;
 
 import static type.WishStatus.DELIVERED;
 
+
+
 @Service
 public class MemFacade {
     @PersistenceContext
@@ -59,7 +61,7 @@ public class MemFacade {
     }
 
     public boolean alreadySubmitted(int member_id, int offer_id) {
-        Query q = em.createQuery("SELECT de FROM Wish de WHERE de.de_member.m_id=:m_id AND de.de_offer.of_id=:o_id AND de.de_status=:stat", Wish.class);
+        Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_status=:stat", Wish.class);
         q.setParameter("m_id", member_id);
         q.setParameter("o_id", offer_id);
         q.setParameter("stat", DELIVERED);
