@@ -18,7 +18,7 @@
 <p th:text="'Status: '+${of_detail.status()}"style="color:red"></p>
 
 <h3>Demands</h3>
-<div th:each="de : ${demandes}">
+<div th:each="de : ${wishes}">
     <p th:text="'From: '+${de.m_name()}"></p>
     <p th:text="'For organisation: '+${de.org_name()}"></p>
     <p th:text="'Status: '+${de.status()}"></p>

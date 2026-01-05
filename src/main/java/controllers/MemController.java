@@ -1,16 +1,14 @@
 package controllers;
 
 import dtos.*;
-import entities.Demande;
+import entities.Wish;
 import entities.Offer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.mvc.AbstractController;
 import services.MemFacade;
-import services.PublicFacade;
 
 import java.util.List;
 
@@ -97,15 +95,15 @@ public class MemController {
                     "can_apply",
                     !facade.alreadySubmitted(courant, id) && !facade.isMemberInOrganisation(courant, id)
             );
-            List<Demande> ld = facade.getDemandesByOffer(id);
-            List<DemandInfo> list_demandes = facade.getDemandsInfo(ld);
-            model.addAttribute("demandes", list_demandes);
+            List<Wish> ld = facade.getWishesByOffer(id);
+            List<WishInfo> list_Wishes = facade.getDemandsInfo(ld);
+            model.addAttribute("Wishes", list_Wishes);
             return "member/offer_detail";
         }
     }
 
     @RequestMapping("/demand")
-    public String demand(Model model, DemandSubmit ds){
+    public String demand(Model model, WishSubmit ds){
         if (model.getAttribute("courant") == null){
             return "member/login";
         } else{

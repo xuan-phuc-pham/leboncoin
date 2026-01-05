@@ -2,12 +2,10 @@ package entities;
 
 import jakarta.persistence.*;
 
-import entities.Responsable;
 import type.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 @Entity
@@ -18,13 +16,13 @@ public class Offer {
     private int of_id;
 
     @ManyToOne
-    private Responsable of_responsable;
+    private Contact of_contact;
 
     @ManyToMany
     private Set<Category> of_categories;
 
     @OneToMany(mappedBy = "de_offer", fetch = FetchType.EAGER)
-    private List<Demande> of_demandes;
+    private List<Wish> of_wishes;
 
     @Enumerated(EnumType.STRING)
     private Status of_status;
@@ -38,8 +36,8 @@ public class Offer {
     public Offer() {
     }
 
-    public Offer(Responsable of_responsable, Status of_status, LocalDateTime of_date, String of_name, String of_description) {
-        this.of_responsable = of_responsable;
+    public Offer(Contact of_contact, Status of_status, LocalDateTime of_date, String of_name, String of_description) {
+        this.of_contact = of_contact;
         this.of_status = of_status;
         this.of_date = of_date;
         this.of_name = of_name;
@@ -74,12 +72,12 @@ public class Offer {
         return of_id;
     }
 
-    public Responsable getOf_responsable() {
-        return of_responsable;
+    public Contact getOf_contact() {
+        return of_contact;
     }
 
-    public void setOf_responsable(Responsable of_responsable) {
-        this.of_responsable = of_responsable;
+    public void setOf_contact(Contact of_contact) {
+        this.of_contact = of_contact;
     }
 
     public Set<Category> getOf_categories() {
@@ -90,12 +88,12 @@ public class Offer {
         this.of_categories = of_categories;
     }
 
-    public List<Demande> getOf_demandes() {
-        return of_demandes;
+    public List<Wish> getOf_wishes() {
+        return of_wishes;
     }
 
-    public void setOf_demandes(List<Demande> of_demandes) {
-        this.of_demandes = of_demandes;
+    public void setOf_wishes(List<Wish> of_wishes) {
+        this.of_wishes = of_wishes;
     }
 
     public String getOf_name() {

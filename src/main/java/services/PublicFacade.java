@@ -36,9 +36,9 @@ public class PublicFacade {
         List<OfferInfo> list_offers = lo.stream()
                 .map(o -> new OfferInfo(
                         o.getOf_id(),
-                        o.getOf_responsable().getR_organisation().getO_id(),
-                        o.getOf_responsable().getR_organisation().getO_name(),
-                        o.getOf_responsable().getR_fname()+" "+o.getOf_responsable().getR_lname(),
+                        o.getOf_contact().getR_organisation().getO_id(),
+                        o.getOf_contact().getR_organisation().getO_name(),
+                        o.getOf_contact().getR_fname()+" "+o.getOf_contact().getR_lname(),
                         o.getOf_description(),
                         o.getOf_name(),
                         o.getOf_date().toString(),
@@ -51,9 +51,9 @@ public class PublicFacade {
         Offer o = em.find(Offer.class, id);
         return new OfferInfo(
                 o.getOf_id(),
-                o.getOf_responsable().getR_organisation().getO_id(),
-                o.getOf_responsable().getR_organisation().getO_name(),
-                o.getOf_responsable().getR_fname()+" "+o.getOf_responsable().getR_lname(),
+                o.getOf_contact().getR_organisation().getO_id(),
+                o.getOf_contact().getR_organisation().getO_name(),
+                o.getOf_contact().getR_fname()+" "+o.getOf_contact().getR_lname(),
                 o.getOf_description(),
                 o.getOf_name(),
                 o.getOf_date().toString(),

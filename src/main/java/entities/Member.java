@@ -2,8 +2,6 @@ package entities;
 
 import jakarta.persistence.*;
 
-import entities.Organisation;
-
 import java.util.List;
 
 @Entity
@@ -24,10 +22,10 @@ public class Member {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Organisation m_organisation;
+    private Organization m_organization;
 
     @OneToMany(mappedBy = "de_member", fetch = FetchType.EAGER)
-    private List<Demande> m_demandes;
+    private List<Wish> m_wishes;
 
     public Member() {
     }
@@ -43,12 +41,12 @@ public class Member {
         return m_id;
     }
 
-    public List<Demande> getM_demandes() {
-        return m_demandes;
+    public List<Wish> getM_wishes() {
+        return m_wishes;
     }
 
-    public void setM_demandes(List<Demande> m_demandes) {
-        this.m_demandes = m_demandes;
+    public void setM_wishes(List<Wish> m_wishes) {
+        this.m_wishes = m_wishes;
     }
 
     public String getM_login() {
@@ -85,12 +83,12 @@ public class Member {
 
 
 
-    public Organisation getM_organisation() {
-        return m_organisation;
+    public Organization getM_organisation() {
+        return m_organization;
     }
 
-    public void setM_organisation(Organisation m_organisation) {
-        this.m_organisation = m_organisation;
+    public void setM_organisation(Organization m_organization) {
+        this.m_organization = m_organization;
     }
 
 

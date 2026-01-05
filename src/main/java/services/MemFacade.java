@@ -1,8 +1,7 @@
 package services;
 
-import dtos.DemandInfo;
+import dtos.WishInfo;
 import dtos.MemberInfo;
-import dtos.OfferInfo;
 import entities.*;
 
 import jakarta.persistence.EntityManager;
@@ -10,10 +9,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -63,12 +59,12 @@ public class MemFacade {
     }
 
     public boolean alreadySubmitted(int member_id, int offer_id) {
-        Query q = em.createQuery("SELECT de FROM Demande de WHERE de.de_member.m_id=:m_id AND de.de_offer.of_id=:o_id AND de.de_status=:stat", Demande.class);
+        Query q = em.createQuery("SELECT de FROM Wish de WHERE de.de_member.m_id=:m_id AND de.de_offer.of_id=:o_id AND de.de_status=:stat", Wish.class);
         q.setParameter("m_id", member_id);
         q.setParameter("o_id", offer_id);
         q.setParameter("stat", DELIVERED);
         try {
-            return (Demande)q.getSingleResult() != null;
+            return (Wish)q.getSingleResult() != null;
         } catch (NoResultException e){
             return false;
         }
@@ -76,7 +72,7 @@ public class MemFacade {
 
     public MemberInfo getMemberInfo(Integer mem_id){
         Member m = em.find(Member.class,mem_id);
-        Organisation o = m.getM_organisation();
+        Organization o = m.getM_organisation();
         MemberInfo mi = new MemberInfo(
                 m.getM_fname(),
                 m.getM_lname(),
@@ -87,12 +83,12 @@ public class MemFacade {
         return mi;
     }
 
-    public DemandInfo getDemandInfo(int demand_id){
-        Demande de = em.find(Demande.class,demand_id);
+    public WishInfo getDemandInfo(int demand_id){
+        Wish de = em.find(Wish.class,demand_id);
         Member m = de.getDe_member();
-        Organisation o = m.getM_organisation();
+        Organization o = m.getM_organisation();
         Offer of = de.getDe_offer();
-        return new DemandInfo(
+        return new WishInfo(
                 demand_id,
                 m.getM_id(),
                 of.getOf_id(),
@@ -102,9 +98,9 @@ public class MemFacade {
         );
     }
 
-    public List<DemandInfo> getDemandsInfo(List<Demande> demands){
-        List<DemandInfo> list_demande = demands.stream()
-                .map(de -> new DemandInfo(
+    public List<WishInfo> getDemandsInfo(List<Wish> demands){
+        List<WishInfo> list_demande = demands.stream()
+                .map(de -> new WishInfo(
                         de.getDe_id(),
                         de.getDe_member().getM_id(),
                         de.getDe_offer().getOf_id(),
@@ -120,7 +116,7 @@ public class MemFacade {
         if(!isMemberInOrganisation(mem_id, of_id)) {//
             Member m = em.find(Member.class,mem_id);
             Offer o = em.find(Offer.class,of_id);
-            Demande d = new Demande(
+            Wish d = new Wish(
                     LocalDateTime.now(),
                     DELIVERED,
                     o,
@@ -136,19 +132,19 @@ public class MemFacade {
     public boolean isMemberInOrganisation(int mem_id, int of_id){        // Check if a member see the offer in the same org
         Member m = em.find(Member.class,mem_id);
         Offer o = em.find(Offer.class,of_id);
-        return m.getM_organisation().getO_id() == o.getOf_responsable().getR_organisation().getO_id();
+        return m.getM_organisation().getO_id() == o.getOf_contact().getR_organisation().getO_id();
     }
 
-    public List<Demande> getDemandesByMember(int mem_id){
+    public List<Wish> getWishesByMember(int mem_id){
         Member m = em.find(Member.class,mem_id);
-        List<Demande> demandes = m.getM_demandes();
-        return demandes;
+        List<Wish> wishes = m.getM_wishes();
+        return wishes;
     }
 
-    public List<Demande> getDemandesByOffer(int offer_id){
+    public List<Wish> getWishesByOffer(int offer_id){
         Offer of = em.find(Offer.class,offer_id);
-        List<Demande> demandes = of.getOf_demandes();
-        return demandes;
+        List<Wish> wishes = of.getOf_wishes();
+        return wishes;
     }
 
 
