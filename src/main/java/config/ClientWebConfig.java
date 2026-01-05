@@ -37,7 +37,7 @@ public class ClientWebConfig implements WebMvcConfigurer {
                 .addResourceHandler("/images/**")
                 .addResourceLocations("/images/");
     }
-
+    //test
     @Bean
     @Description("Thymeleaf Template Resolver")
     public SpringResourceTemplateResolver templateResolver() {
