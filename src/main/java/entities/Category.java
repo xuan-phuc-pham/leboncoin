@@ -7,12 +7,10 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int c_id;
 
     @Column(unique = true)
-    private String category_name;
-
-
+    private String c_name;
 
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long m_id;
+    private int m_id;
 
     @Column(unique = true)
     private String m_login;
@@ -26,7 +26,7 @@ public class Member {
     @JoinColumn(nullable = false)
     private Organisation m_organisation;
 
-    @OneToMany(mappedBy = "de_member")
+    @OneToMany(mappedBy = "de_member", fetch = FetchType.EAGER)
     private List<Demande> m_demandes;
 
     public Member() {
@@ -39,8 +39,16 @@ public class Member {
         this.m_lname = m_lname;
     }
 
-    public Long getM_id() {
+    public int getM_id() {
         return m_id;
+    }
+
+    public List<Demande> getM_demandes() {
+        return m_demandes;
+    }
+
+    public void setM_demandes(List<Demande> m_demandes) {
+        this.m_demandes = m_demandes;
     }
 
     public String getM_login() {

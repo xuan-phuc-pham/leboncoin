@@ -2,16 +2,18 @@ package entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import type.Status;
+
+import type.DemandStatus;
 @Entity
 public class Demande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long de_id;
+    private int de_id;
 
     private LocalDateTime de_date;
 
-    private Status de_status;
+    @Enumerated(EnumType.STRING)
+    private DemandStatus de_status;
 
     @ManyToOne
     private Offer de_offer;
@@ -22,14 +24,14 @@ public class Demande {
     public Demande() {
     }
 
-    public Demande(LocalDateTime de_date, Status de_status, Offer de_offer, Member de_member) {
+    public Demande(LocalDateTime de_date, DemandStatus de_status, Offer de_offer, Member de_member) {
         this.de_date = de_date;
         this.de_status = de_status;
         this.de_offer = de_offer;
         this.de_member = de_member;
     }
 
-    public Long getDe_id() {
+    public int getDe_id() {
         return de_id;
     }
 
@@ -41,11 +43,11 @@ public class Demande {
         this.de_date = de_date;
     }
 
-    public Status getDe_status() {
+    public DemandStatus getDe_status() {
         return de_status;
     }
 
-    public void setDe_status(Status de_status) {
+    public void setDe_status(DemandStatus de_status) {
         this.de_status = de_status;
     }
 

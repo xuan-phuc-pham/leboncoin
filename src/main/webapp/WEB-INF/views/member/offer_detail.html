@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to fake leboncoin</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: my-navbar}"></div>
+
+<h2>Offer Information</h2>
+
+<h3 th:text="'Offer: '+${of_detail.name()}"></h3>
+<p th:text="'Created at: '+${of_detail.creation_date()}" style="color:darkblue"></p>
+<p th:text="'Organisation: '+${of_detail.org_name()}" style="color:darkblue"></p>
+<p th:text="'Contact: '+${of_detail.res_name()}" style="color:grey"></p>
+<p th:text="'Description: '+${of_detail.description()}"style="color:lightslategray"></p>
+<p th:text="'Status: '+${of_detail.status()}"style="color:red"></p>
+
+<h3>Demands</h3>
+<div th:each="de : ${demandes}">
+    <p th:text="'From: '+${de.m_name()}"></p>
+    <p th:text="'For organisation: '+${de.org_name()}"></p>
+    <p th:text="'Status: '+${de.status()}"></p>
+</div>
+<p></p>
+<form th:if="${can_apply}" method="post" name="idform">
+    <input type="hidden" name="of_id" th:value="${of_detail.id()}" />
+    <button type="button" th:attr="onclick=|document.idform.action='@{/member/demand}';document.idform.submit();|">Request for your association</button>
+</form>
+
+</body>
+</html>

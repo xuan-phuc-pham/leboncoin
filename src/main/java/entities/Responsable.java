@@ -9,9 +9,6 @@ import java.util.List;
 @Entity
 public class Responsable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long r_id;
 
     @Column(unique = true)
     private String r_login;
@@ -20,6 +17,7 @@ public class Responsable {
     private String r_fname;
     private String r_lname;
 
+    @Id
     @OneToOne
     private Organisation r_organisation;
 
@@ -35,10 +33,6 @@ public class Responsable {
         this.r_fname = r_fname;
         this.r_lname = r_lname;
         this.r_organisation = r_organisation;
-    }
-
-    public Long getR_id() {
-        return r_id;
     }
 
     public String getR_login() {
@@ -77,9 +71,6 @@ public class Responsable {
         return r_organisation;
     }
 
-    public void setR_organisation(Organisation r_organisation) {
-        this.r_organisation = r_organisation;
-    }
 
     public List<Offer> getR_offers() {
         return r_offers;

@@ -7,16 +7,12 @@ public class Organisation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long o_id;
+    private int o_id;
 
     @Column(unique = true)
     private String o_name;
 
     private String o_description;
-
-    @OneToOne
-    private Responsable o_responsable;
-
 
     public Organisation() {
     }
@@ -42,7 +38,7 @@ public class Organisation {
         this.o_description = o_description;
     }
 
-    public Responsable getO_responsable() {
-        return o_responsable;
+    public int getO_id() {
+        return o_id;
     }
 }

@@ -1,12 +1,18 @@
 package controllers;
 
-import dtos.MemberCredential;
+import dtos.*;
+import entities.Demande;
+import entities.Offer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.AbstractController;
 import services.MemFacade;
+import services.PublicFacade;
+
+import java.util.List;
 
 @Controller
 @SessionAttributes("courant")
@@ -22,21 +28,104 @@ public class MemController {
     @RequestMapping("")
     public String index(Model model){
         if (model.getAttribute("courant") == null){
-            return "member/login";
+            return "redirect:member/login";
         } else{
-            return "member/dashboard";
+            return "redirect:member/dashboard";
         }
     }
 
     @RequestMapping("login")
     public String login(Model model, MemberCredential mem_cred){
-        if (facade.checkLP(mem_cred.login(), mem_cred.password())) {
-            model.addAttribute("courant", mem_cred.login());
-            model.addAttribute("username", mem_cred.login());
+        if (model.getAttribute("courant") != null){
+            return "redirect:dashboard";
+        }else{
+            if (facade.checkLP(mem_cred.login(), mem_cred.password())) {
+                model.addAttribute("courant", facade.retrieveMemberId(mem_cred.login()));
+                return "redirect:dashboard";
+            } else{
+                if( mem_cred.login() != null) {
+                    model.addAttribute("error", "Authentication Failed");
+                }
+                return "member/login";
+            }
+        }
+    }
+
+    @RequestMapping("dashboard")
+    public String dashboard(Model model){
+        if (model.getAttribute("courant") == null){
+            return "member/login";
+        } else{
+            Integer courant = (Integer) model.getAttribute("courant");
+            MemberInfo mi = facade.getMemberInfo(courant);
+            model.addAttribute("member", mi);
             return "member/dashboard";
         }
-        return "";
     }
+
+    @RequestMapping("logout")
+    public String logout(SessionStatus session, Model model){
+        session.setComplete();
+        model.addAttribute("member", null);
+        return "redirect:/";
+    }
+
+    @RequestMapping("offers")
+    public String offers(Model model){
+        if (model.getAttribute("courant") == null){
+            return "member/login";
+        } else {
+            MemberInfo mi = facade.getMemberInfo((Integer) model.getAttribute("courant"));
+            model.addAttribute("member", mi);
+            List<Offer> offers = facade.getPublicFacade().getOffers();
+            List<OfferInfo> list_offers = facade.getPublicFacade().getOffersInfo(offers);
+            model.addAttribute("offers", list_offers);
+            return "public/offers";
+        }
+    }
+    @GetMapping("/offer/detail/{id}")
+    public String offerDetail(Model model, @PathVariable("id") int id){
+        if (model.getAttribute("courant") == null){
+            return "member/login";
+        } else {
+            MemberInfo mi = facade.getMemberInfo((Integer) model.getAttribute("courant"));
+            model.addAttribute("member", mi);
+            OfferInfo of_detail = facade.getPublicFacade().getOfferById(id);
+            model.addAttribute("of_detail", of_detail);
+            int courant = (int) model.getAttribute("courant");
+            model.addAttribute(
+                    "can_apply",
+                    !facade.alreadySubmitted(courant, id) && !facade.isMemberInOrganisation(courant, id)
+            );
+            List<Demande> ld = facade.getDemandesByOffer(id);
+            List<DemandInfo> list_demandes = facade.getDemandsInfo(ld);
+            model.addAttribute("demandes", list_demandes);
+            return "member/offer_detail";
+        }
+    }
+
+    @RequestMapping("/demand")
+    public String demand(Model model, DemandSubmit ds){
+        if (model.getAttribute("courant") == null){
+            return "member/login";
+        } else{
+            int of_id = ds.of_id();
+            int mem_id = (Integer)model.getAttribute("courant");
+            if( !facade.alreadySubmitted(mem_id, of_id) && !facade.isMemberInOrganisation(mem_id, of_id)){
+                facade.demande(mem_id, of_id);
+                return "redirect:offer/detail/"+of_id;
+            } else{
+                return "redirect:offer/detail/"+of_id;
+            }
+
+//            return "redirect:/member/dashboard";
+        }
+
+    }
+
+
+
+
 
 
 //    public String register(Model model, MemberCredentials mem_cred){
