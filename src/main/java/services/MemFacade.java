@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static type.DemandStatus.DELIVERED;
+import static type.WishStatus.DELIVERED;
 
 @Service
 public class MemFacade {
@@ -74,8 +74,8 @@ public class MemFacade {
         Member m = em.find(Member.class,mem_id);
         Organization o = m.getM_organisation();
         MemberInfo mi = new MemberInfo(
-                m.getM_fname(),
-                m.getM_lname(),
+                m.getM_firstName(),
+                m.getM_lastName(),
                 m.getM_login(),
                 o.getO_name(),
                 o.getO_id()
@@ -92,7 +92,7 @@ public class MemFacade {
                 demand_id,
                 m.getM_id(),
                 of.getOf_id(),
-                m.getM_fname()+" "+m.getM_lname(),
+                m.getM_firstName()+" "+m.getM_lastName(),
                 o.getO_name(),
                 de.getDe_status().toString()
         );
@@ -104,7 +104,7 @@ public class MemFacade {
                         de.getDe_id(),
                         de.getDe_member().getM_id(),
                         de.getDe_offer().getOf_id(),
-                        de.getDe_member().getM_fname()+" "+ de.getDe_member().getM_lname(),
+                        de.getDe_member().getM_firstName()+" "+ de.getDe_member().getM_lastName(),
                         de.getDe_member().getM_organisation().getO_name(),
                         de.getDe_status().toString()
                 )).toList();

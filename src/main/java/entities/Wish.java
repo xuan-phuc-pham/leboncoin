@@ -3,7 +3,7 @@ package entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import type.DemandStatus;
+import type.WishStatus;
 @Entity
 public class Wish {
     @Id
@@ -13,7 +13,7 @@ public class Wish {
     private LocalDateTime w_date;
 
     @Enumerated(EnumType.STRING)
-    private DemandStatus w_status;
+    private WishStatus w_status;
 
     @ManyToOne
     private Offer w_offer;
@@ -24,7 +24,7 @@ public class Wish {
     public Wish() {
     }
 
-    public Wish(LocalDateTime w_date, DemandStatus w_status, Offer w_offer, Member w_member) {
+    public Wish(LocalDateTime w_date, WishStatus w_status, Offer w_offer, Member w_member) {
         this.w_date = w_date;
         this.w_status = w_status;
         this.w_offer = w_offer;
@@ -43,11 +43,11 @@ public class Wish {
         this.w_date = w_date;
     }
 
-    public DemandStatus getDe_status() {
+    public WishStatus getDe_status() {
         return w_status;
     }
 
-    public void setDe_status(DemandStatus w_status) {
+    public void setDe_status(WishStatus w_status) {
         this.w_status = w_status;
     }
 

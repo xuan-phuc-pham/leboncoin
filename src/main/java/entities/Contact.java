@@ -12,8 +12,8 @@ public class Contact {
     private String c_login;
     private String c_password;
 
-    private String c_fname;
-    private String c_lname;
+    private String c_firstName;
+    private String c_lastName;
 
     @Id
     @OneToOne
@@ -25,11 +25,11 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(String c_login, String c_password, String c_fname, String c_lname, Organization c_organization) {
+    public Contact(String c_login, String c_password, String c_firstName, String c_lastName, Organization c_organization) {
         this.c_login = c_login;
         this.c_password = c_password;
-        this.c_fname = c_fname;
-        this.c_lname = c_lname;
+        this.c_firstName = c_firstName;
+        this.c_lastName = c_lastName;
         this.c_organization = c_organization;
     }
 
@@ -49,20 +49,20 @@ public class Contact {
         this.c_password = c_password;
     }
 
-    public String getR_fname() {
-        return c_fname;
+    public String getR_firstName() {
+        return c_firstName;
     }
 
-    public void setR_fname(String c_fname) {
-        this.c_fname = c_fname;
+    public void setR_firstName(String c_firstName) {
+        this.c_firstName = c_firstName;
     }
 
-    public String getR_lname() {
-        return c_lname;
+    public String getR_lastName() {
+        return c_lastName;
     }
 
-    public void setR_lname(String c_lname) {
-        this.c_lname = c_lname;
+    public void setR_lastName(String c_lastName) {
+        this.c_lastName = c_lastName;
     }
 
     public Organization getR_organisation() {
