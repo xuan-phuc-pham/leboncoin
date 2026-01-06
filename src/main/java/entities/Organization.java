@@ -1,3 +1,5 @@
+
+
 package entities;
 
 import jakarta.persistence.*;
@@ -50,3 +52,5 @@ public class Organization {
         return o_id;
     }
 }
+
+

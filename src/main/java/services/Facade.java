@@ -69,29 +69,29 @@ public class Facade {
         }
     }
 
-    @Transactional
-    public boolean wish(int mem_id, int of_id){
-        if(!isMemberInOrganisation(mem_id, of_id)) {//
-            Member m = em.find(Member.class,mem_id);
-            Offer o = em.find(Offer.class,of_id);
-            Wish d = new Wish(
-                    LocalDateTime.now(),
-                    DELIVERED,
-                    o,
-                    m
-            );
-            em.persist(d);
-            return true;
-        } else{
-            return false;
-        }
-    }
+//    @Transactional
+//    public boolean wish(int mem_id, int of_id){
+//        if(!isMemberInOrganisation(mem_id, of_id)) {//
+//            Member m = em.find(Member.class,mem_id);
+//            Offer o = em.find(Offer.class,of_id);
+//            Wish d = new Wish(
+//                    LocalDateTime.now(),
+//                    DELIVERED,
+//                    o,
+//                    m
+//            );
+//            em.persist(d);
+//            return true;
+//        } else{
+//            return false;
+//        }
+//    }
 
-    public boolean isMemberInOrganisation(int mem_id, int of_id){        // Check if a member see the offer in the same org
-        Member m = em.find(Member.class,mem_id);
-        Offer o = em.find(Offer.class,of_id);
-        return m.getM_organisation().getO_id() == o.getOf_contact().getR_organisation().getO_id();
-    }
+//    public boolean isMemberInOrganisation(int mem_id, int of_id){        // Check if a member see the offer in the same org
+//        Member m = em.find(Member.class,mem_id);
+//        Offer o = em.find(Offer.class,of_id);
+//        return m.getM_organisation().getO_id() == o.getOf_contact().getR_organisation().getO_id();
+//    }
 
     public List<Wish> getWishesByMember(int mem_id){
         Member m = em.find(Member.class,mem_id);

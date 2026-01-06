@@ -28,6 +28,7 @@ public class Controller {
     public String displayTests(Model model) {
         List<TestResult> report = new ArrayList<>();
 
+        // TEST ENREGISTREMENT DES MEMBRES
         // Test 1: Offers
         try {
             var offers = facade.getOffers();
@@ -38,9 +39,9 @@ public class Controller {
 
         // Test 2: Member Wishes
         try {
-            int testId = 1;
+            int testId = 2;
             var wishes = facade.getWishesByMember(testId);
-            report.add(new TestResult("Member Wishes", "OK", "Member ID 1 has " + wishes.size() + " wishes."));
+            report.add(new TestResult("Member Wishes", "OK", "Member " + testId + "has " + wishes.size() + " wishes."));
         } catch (Exception e) {
             report.add(new TestResult("Member Wishes", "KO", "Error retrieving wishes: " + e.getMessage()));
         }

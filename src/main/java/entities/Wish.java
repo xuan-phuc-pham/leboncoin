@@ -67,3 +67,5 @@ public class Wish {
         this.w_member = w_member;
     }
 }
+
+
