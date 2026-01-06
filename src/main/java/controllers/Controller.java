@@ -1,8 +1,7 @@
 package controllers;
 
 import dtos.*;
-import entities.Wish;
-import entities.Offer;
+import entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,119 @@ public class Controller {
         List<TestResult> report = new ArrayList<>();
 
         // TEST ENREGISTREMENT DES MEMBRES
-        // Test 1: Offers
+
+        try {
+            var login = "tholland";
+            var password = "spidey";
+            Member findMember = facade.checkMember(login, password);
+            report.add(new TestResult("Check For Existing Member", "OK", "First Name: "+findMember.getM_firstName() + ", Last Name: "+findMember.getM_lastName()));
+        } catch (Exception e) {
+            report.add(new TestResult("Check For Existing Member", "KO", e.getMessage()));
+        }
+
+        try {
+            String login = "non_existent_user";
+            String password = "wrong_password";
+            Member findMember = facade.checkMember(login, password);
+
+            if (findMember == null) {
+                report.add(new TestResult("Check Non Existing Member", "OK", "Successfully rejected invalid credentials (returned null)"));
+            } else {
+                report.add(new TestResult("Check Non Existing Member", "KO", "Security flaw: login allowed for non-existent user"));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Check Non Existing Member", "KO", "Unexpected error: " + e.getMessage()));
+        }
+
+        try {
+            var login = "tstark";
+            var password = "ironman";
+            Contact findContact = facade.checkContact(login, password);
+            report.add(new TestResult("Check For Existing Contact", "OK", "First Name: "+ findContact.getC_firstName() + ", Last Name: "+ findContact.getC_lastName()));
+        } catch (Exception e) {
+            report.add(new TestResult("Check For Existing Contact", "KO", e.getMessage()));
+        }
+
+        try {
+            String login = "non_existent_user";
+            String password = "wrong_password";
+            Contact findContact = facade.checkContact(login, password);
+
+            if (findContact == null) {
+                report.add(new TestResult("Check Non Existing Contact", "OK", "Successfully rejected invalid credentials (returned null)"));
+            } else {
+                report.add(new TestResult("Check Non Existing Contact", "KO", "Security flaw: login allowed for non-existent user"));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Check Non Existing Contact", "KO", e.getMessage()));
+        }
+
+        try {
+
+            // Problem because we need to linked it to an organization
+            Member nonExistingMember = new Member();
+            nonExistingMember.setM_login("hpotter");
+
+            boolean created = facade.registerMember(nonExistingMember);
+
+            if(created) {
+                report.add(new TestResult("Register Non Existing Member", "OK", "Correctly registered the member."));
+            } else {
+                report.add(new TestResult("Register Non Existing Member", "KO", "Error: System didn't register the member."));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Register Non Existing Member", "KO", e.getMessage()));
+        }
+
+        try {
+            Member existingMember = new Member();
+            existingMember.setM_login("tholland");
+
+            boolean created = facade.registerMember(existingMember);
+
+            if(!created) {
+                report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists."));
+            } else {
+                report.add(new TestResult("Register Existing Member", "KO", "Error: System allowed duplicate login!"));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Register Existing Member", "KO", e.getMessage()));
+        }
+
+        try {
+            //Problem because it needs to be linked to an organization
+            Contact nonExistingContact = new Contact();
+            nonExistingContact.setC_login("hpotter");
+
+            boolean created = facade.registerContact(nonExistingContact);
+
+            if(created) {
+                report.add(new TestResult("Register Non Existing Contact", "OK", "Correctly registered the member."));
+            } else {
+                report.add(new TestResult("Register Non Existing Contact", "KO", "Error: System didn't register the member."));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Register Non Existing Contact", "KO", e.getMessage()));
+        }
+
+        try {
+            Contact existingContact = new Contact();
+            existingContact.setC_login("tstark");
+
+            boolean created = facade.registerContact(existingContact);
+
+            if(!created) {
+                report.add(new TestResult("Register Existing Contact", "OK", "Correctly rejected: Login already exists."));
+            } else {
+                report.add(new TestResult("Register Existing Contact", "KO", "Error: System allowed duplicate login!"));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult("Register Existing Contact", "KO", e.getMessage()));
+        }
+
+
+
+
         try {
             var offers = facade.getOffers();
             report.add(new TestResult("Public Offers", "OK", "Found " + offers.size() + " offers."));
@@ -37,7 +148,6 @@ public class Controller {
             report.add(new TestResult("Public Offers", "KO", e.getMessage()));
         }
 
-        // Test 2: Member Wishes
         try {
             int testId = 2;
             var wishes = facade.getWishesByMember(testId);
@@ -49,106 +159,6 @@ public class Controller {
         model.addAttribute("testReport", report);
         return "tests";
     }
-
-//
-//    @RequestMapping("login")
-//    public String login(Model model, MemberCredential mem_cred){
-//        if (model.getAttribute("courant") != null){
-//            return "redirect:dashboard";
-//        }else{
-//            if (facade.checkLP(mem_cred.login(), mem_cred.password())) {
-//                model.addAttribute("courant", facade.retrieveMemberId(mem_cred.login()));
-//                return "redirect:dashboard";
-//            } else{
-//                if( mem_cred.login() != null) {
-//                    model.addAttribute("error", "Authentication Failed");
-//                }
-//                return "member/login";
-//            }
-//        }
-//    }
-//
-//    @RequestMapping("dashboard")
-//    public String dashboard(Model model){
-//        if (model.getAttribute("courant") == null){
-//            return "member/login";
-//        } else{
-//            Integer courant = (Integer) model.getAttribute("courant");
-//            MemberInfo mi = facade.getMemberInfo(courant);
-//            model.addAttribute("member", mi);
-//            return "member/dashboard";
-//        }
-//    }
-//
-//    @RequestMapping("logout")
-//    public String logout(SessionStatus session, Model model){
-//        session.setComplete();
-//        model.addAttribute("member", null);
-//        return "redirect:/";
-//    }
-//
-//    @RequestMapping("offers")
-//    public String offers(Model model){
-//        if (model.getAttribute("courant") == null){
-//            return "member/login";
-//        } else {
-//            MemberInfo mi = facade.getMemberInfo((Integer) model.getAttribute("courant"));
-//            model.addAttribute("member", mi);
-//            List<Offer> offers = facade.getPublicFacade().getOffers();
-//            List<OfferInfo> list_offers = facade.getPublicFacade().getOffersInfo(offers);
-//            model.addAttribute("offers", list_offers);
-//            return "public/offers";
-//        }
-//    }
-//    @GetMapping("/offer/detail/{id}")
-//    public String offerDetail(Model model, @PathVariable("id") int id){
-//        if (model.getAttribute("courant") == null){
-//            return "member/login";
-//        } else {
-//            MemberInfo mi = facade.getMemberInfo((Integer) model.getAttribute("courant"));
-//            model.addAttribute("member", mi);
-//            OfferInfo of_detail = facade.getPublicFacade().getOfferById(id);
-//            model.addAttribute("of_detail", of_detail);
-//            int courant = (int) model.getAttribute("courant");
-//            model.addAttribute(
-//                    "can_apply",
-//                    !facade.alreadySubmitted(courant, id) && !facade.isMemberInOrganisation(courant, id)
-//            );
-//            List<Wish> ld = facade.getWishesByOffer(id);
-//            List<WishInfo> list_Wishes = facade.getDemandsInfo(ld);
-//            model.addAttribute("Wishes", list_Wishes);
-//            return "member/offer_detail";
-//        }
-//    }
-//
-//    @RequestMapping("/demand")
-//    public String demand(Model model, WishSubmit ds){
-//        if (model.getAttribute("courant") == null){
-//            return "member/login";
-//        } else{
-//            int of_id = ds.of_id();
-//            int mem_id = (Integer)model.getAttribute("courant");
-//            if( !facade.alreadySubmitted(mem_id, of_id) && !facade.isMemberInOrganisation(mem_id, of_id)){
-//                facade.wish(mem_id, of_id);
-//                return "redirect:offer/detail/"+of_id;
-//            } else{
-//                return "redirect:offer/detail/"+of_id;
-//            }
-//
-////            return "redirect:/member/dashboard";
-//        }
-
-//    }
-
-
-
-
-
-
-//    public String register(Model model, MemberCredentials mem_cred){
-//
-//    }
-
 
 
 }

@@ -23,6 +23,83 @@ public class Facade {
     public Facade() {
     }
 
+    // CHECK AND REGISTER PEOPLE
+
+    public Member checkMember(String login, String password) {
+        // Search for a member in the Member table
+        try {
+            Query q = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class);
+            q.setParameter("login", login);
+
+            Member member = (Member) q.getSingleResult();
+
+            if (member != null && member.getM_password().equals(password)) {
+                return member;
+            }
+        } catch (NoResultException e) {
+            System.out.println("No member found with login: " + login);
+            return null;
+        } catch (Exception e) {
+            System.err.println("Database error: " + e.getMessage());
+            return null;
+        }
+
+        return null;
+    }
+
+    public Contact checkContact(String login, String password) {
+        // Search a contact in the Contact Table
+        try {
+            Query q = em.createQuery("SELECT c FROM Contact c WHERE c.c_login = :login", Contact.class);
+            q.setParameter("login", login);
+
+            Contact contact = (Contact) q.getSingleResult();
+
+            if (contact != null && contact.getC_password().equals(password)) {
+                return contact;
+            }
+        } catch (NoResultException e) {
+            System.out.println("No contact found with login: " + login);
+            return null;
+        }  catch (Exception e) {
+            System.err.println("Database error: " + e.getMessage());
+            return null;
+        }
+
+        return null;
+    }
+
+
+
+    @Transactional
+    public boolean registerMember(Member member) {
+        // Insert the member if they doesn't already exist in the database
+        List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
+                .setParameter("login", member.getM_login())
+                .getResultList();
+
+        if (results.isEmpty()) {
+            em.persist(member);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public boolean registerContact(Contact contact) {
+        // Insert the contact if it doesn't already exist in the database
+        List<Contact> results = em.createQuery("SELECT c FROM Contact c WHERE c.c_login = :login", Contact.class)
+                .setParameter("login", contact.getC_login())
+                .getResultList();
+
+        if (results.isEmpty()) {
+            em.persist(contact);
+            return true;
+        }
+        return false;
+    }
+
     public List<Offer> getOffers(){
         List<Offer> offers = em.createQuery("SELECT o FROM Offer o WHERE o.of_status ='ACTIVE' ORDER BY o.of_date", Offer.class).getResultList();
         return offers;
