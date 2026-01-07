@@ -142,10 +142,26 @@ public class Controller {
 
 
         try {
-            var offers = facade.getOffers();
-            report.add(new TestResult("Public Offers", "OK", "Found " + offers.size() + " offers."));
+            var offers = facade.getOffersByCategory(null);
+            report.add(new TestResult("Get All Offers", "OK", "Found " + offers.size() + " offers."));
         } catch (Exception e) {
-            report.add(new TestResult("Public Offers", "KO", e.getMessage()));
+            report.add(new TestResult("Get All Offers", "KO", e.getMessage()));
+        }
+
+        try {
+            String category = "Sport";
+            var offers = facade.getOffersByCategory(category);
+            report.add(new TestResult("Get Offers From a Category", "OK", "Found " + offers.size() + " offers for the category: " + category));
+        } catch (Exception e) {
+            report.add(new TestResult("Get Offers From a Category", "KO", e.getMessage()));
+        }
+
+        try {
+            String category = "Nul";
+            var offers = facade.getOffersByCategory(category);
+            report.add(new TestResult("Get Offers From a Non Existent  Category", "KO", "Found " + offers.size() + " offers for the category: " + category));
+        } catch (Exception e) {
+            report.add(new TestResult("Get Offers From a Non Existent Category", "OK", e.getMessage()));
         }
 
         try {
