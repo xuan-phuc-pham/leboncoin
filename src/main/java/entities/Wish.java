@@ -66,6 +66,9 @@ public class Wish {
     public void setW_member(Member w_member) {
         this.w_member = w_member;
     }
+
+
+
 }
 
 

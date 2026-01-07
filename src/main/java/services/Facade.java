@@ -1,5 +1,6 @@
 package services;
 
+import dtos.RegMember;
 import entities.*;
 
 import jakarta.persistence.EntityManager;
@@ -72,20 +73,41 @@ public class Facade {
 
 
 
+//    @Transactional
+//    public boolean registerMember(Member member) {
+//        // Insert the member if they doesn't already exist in the database
+//        List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
+//                .setParameter("login", member.getM_login())
+//                .getResultList();
+//
+//        if (results.isEmpty()) {
+//            em.persist(member);
+//            return true;
+//        }
+//
+//        return false;
+//    }
+
     @Transactional
-    public boolean registerMember(Member member) {
-        // Insert the member if they doesn't already exist in the database
+    public boolean registerMember(RegMember member) {
         List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
-                .setParameter("login", member.getM_login())
+                .setParameter("login", member.login())
                 .getResultList();
-
-        if (results.isEmpty()) {
-            em.persist(member);
-            return true;
+        Organization organization = em.find(Organization.class, member.org_id());
+        if (!results.isEmpty()) {
+            if (results.get(0).getM_login().toString() == member.login().toString() ){
+                return true;
+            } else return false;
+        }else if( organization == null ){
+            return false;
         }
+        Member mem = new Member(member.login(), member.password(), member.fname(), member.lname());
+        mem.setM_organisation(organization);
+        em.persist(mem);
+        return true;
 
-        return false;
     }
+
 
     @Transactional
     public boolean registerContact(Contact contact) {
@@ -137,7 +159,7 @@ public class Facade {
         // Get all the offers that have the keyword in their name
         return em.createQuery(
                         "SELECT o FROM Offer o " +
-                                "WHERE LOWER(o.ofName) LIKE LOWER(:keyword)",
+                                "WHERE LOWER(o.of_name) LIKE LOWER(:keyword)",
                         Offer.class
                 )
                 .setParameter("keyword", "%" + keyword + "%")

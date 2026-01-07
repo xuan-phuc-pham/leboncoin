@@ -16,8 +16,6 @@ public class Contact {
     private String c_lastName;
 
     @Id
-    private Integer c_id;
-
     @OneToOne
     private Organization c_organization;
 
@@ -27,8 +25,7 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(Integer c_id ,String c_login, String c_password, String c_firstName, String c_lastName, Organization c_organization) {
-        this.c_id = c_id;
+    public Contact(String c_login, String c_password, String c_firstName, String c_lastName, Organization c_organization) {
         this.c_login = c_login;
         this.c_password = c_password;
         this.c_firstName = c_firstName;
@@ -68,17 +65,17 @@ public class Contact {
         this.c_lastName = c_lastName;
     }
 
-    public Integer getC_id() {
-        return c_id;
-    }
+//    public Integer getC_id() {
+//        return c_id;
+//    }
 
     public Organization getC_organization() {
         return c_organization;
     }
 
-    public void setC_organization(Organization c_organization) {
-        this.c_organization = c_organization;
-    }
+//    public void setC_organization(Organization c_organization) {
+//        this.c_organization = c_organization;
+//    }
 
     public List<Offer> getC_offers() {
         return c_offers;

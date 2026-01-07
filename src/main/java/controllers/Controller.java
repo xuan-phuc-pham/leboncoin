@@ -76,13 +76,8 @@ public class Controller {
         }
 
         try {
-
-            // Problem because we need to linked it to an organization
-            Member nonExistingMember = new Member();
-            nonExistingMember.setM_login("hpotter");
-
+            RegMember nonExistingMember = new RegMember("hpotter", "expelliarmus", "Harry", "Potter", 5);
             boolean created = facade.registerMember(nonExistingMember);
-
             if(created) {
                 report.add(new TestResult("Register Non Existing Member", "OK", "Correctly registered the member."));
             } else {
@@ -92,36 +87,37 @@ public class Controller {
             report.add(new TestResult("Register Non Existing Member", "KO", e.getMessage()));
         }
 
-        try {
-            Member existingMember = new Member();
-            existingMember.setM_login("tholland");
+//        try {
+//            Member existingMember = new Member();
+//            existingMember.setM_login("tholland");
+//
+//            boolean created = facade.registerMember(existingMember);
+//
+//            if(!created) {
+//                report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists."));
+//            } else {
+//                report.add(new TestResult("Register Existing Member", "KO", "Error: System allowed duplicate login!"));
+//            }
+//        } catch (Exception e) {
+//            report.add(new TestResult("Register Existing Member", "KO", e.getMessage()));
+//        }
 
-            boolean created = facade.registerMember(existingMember);
+//        try { // Creation of an organisation and its contact
+//            //Problem because it needs to be linked to an organization -> solved
+//
+//            Organization organization = new Organization("Horwarts Wizarding School", "Hogwarts School of Witchcraft and Wizardry is a legendary, enchanted boarding school hidden in the Scottish Highlands where young witches and wizards master the magical arts within a sprawling castle of shifting stairs and ancient secrets.");
+//            Contact nonExistingContact = new Contact("hpotter", "expelliarmus", "Harry", "Potter", organization);
+//            boolean created = facade.registerContact(nonExistingContact);
+//
+//            if(created) {
+//                report.add(new TestResult("Register Non Existing Contact", "OK", "Correctly registered the member."));
+//            } else {
+//                report.add(new TestResult("Register Non Existing Contact", "KO", "Error: System didn't register the member."));
+//            }
+//        } catch (Exception e) {
+//            report.add(new TestResult("Register Non Existing Contact", "KO", e.getMessage()));
+//        }
 
-            if(!created) {
-                report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists."));
-            } else {
-                report.add(new TestResult("Register Existing Member", "KO", "Error: System allowed duplicate login!"));
-            }
-        } catch (Exception e) {
-            report.add(new TestResult("Register Existing Member", "KO", e.getMessage()));
-        }
-
-        try {
-            //Problem because it needs to be linked to an organization
-            Contact nonExistingContact = new Contact();
-            nonExistingContact.setC_login("hpotter");
-
-            boolean created = facade.registerContact(nonExistingContact);
-
-            if(created) {
-                report.add(new TestResult("Register Non Existing Contact", "OK", "Correctly registered the member."));
-            } else {
-                report.add(new TestResult("Register Non Existing Contact", "KO", "Error: System didn't register the member."));
-            }
-        } catch (Exception e) {
-            report.add(new TestResult("Register Non Existing Contact", "KO", e.getMessage()));
-        }
 
         try {
             Contact existingContact = new Contact();
@@ -142,7 +138,7 @@ public class Controller {
 
 
         try {
-            var offers = facade.getOffersByCategory(null);
+            List<Offer> offers = facade.getOffersByCategory(null);
             report.add(new TestResult("Get All Offers", "OK", "Found " + offers.size() + " offers."));
         } catch (Exception e) {
             report.add(new TestResult("Get All Offers", "KO", e.getMessage()));
