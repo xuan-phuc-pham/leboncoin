@@ -44,7 +44,7 @@ public class Controller {
             Member findMember = facade.checkMember(login, password);
 
             if (findMember == null) {
-                report.add(new TestResult("Check Non Existing Member", "OK", "Successfully rejected invalid credentials (returned null)"));
+                report.add(new TestResult("Check Non Existing Member", "OK", "Correctly rejected: null" ));
             } else {
                 report.add(new TestResult("Check Non Existing Member", "KO", "Security flaw: login allowed for non-existent user"));
             }
@@ -67,7 +67,7 @@ public class Controller {
             Contact findContact = facade.checkContact(login, password);
 
             if (findContact == null) {
-                report.add(new TestResult("Check Non Existing Contact", "OK", "Successfully rejected invalid credentials (returned null)"));
+                report.add(new TestResult("Check Non Existing Contact", "OK", "Correctly rejected: null"));
             } else {
                 report.add(new TestResult("Check Non Existing Contact", "KO", "Security flaw: login allowed for non-existent user"));
             }
@@ -161,7 +161,7 @@ public class Controller {
             var offers = facade.getOffersByCategory(category);
             report.add(new TestResult("Get Offers From a Non Existent  Category", "KO", "Found " + offers.size() + " offers for the category: " + category));
         } catch (Exception e) {
-            report.add(new TestResult("Get Offers From a Non Existent Category", "OK", e.getMessage()));
+            report.add(new TestResult("Get Offers From a Non Existent Category", "OK", "Correctly rejected: " + e.getMessage()));
         }
 
         try {
