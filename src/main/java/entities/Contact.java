@@ -28,8 +28,7 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(Integer c_id ,String c_login, String c_password, String c_firstName, String c_lastName, String o_name, String o_description) {
-        this.c_id = c_id;
+    public Contact(String c_login, String c_password, String c_firstName, String c_lastName, String o_name, String o_description) {
         this.c_login = c_login;
         this.c_password = c_password;
         this.c_firstName = c_firstName;
