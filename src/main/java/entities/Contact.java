@@ -2,6 +2,7 @@ package entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,11 @@ public class Contact {
         this.c_firstName = c_firstName;
         this.c_lastName = c_lastName;
         this.c_organization = c_organization;
+        this.c_offers = new ArrayList<>();
+    }
+
+    public void addOffer(Offer offer){
+        this.c_offers.add(offer);
     }
 
     public String getC_login() {

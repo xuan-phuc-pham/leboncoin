@@ -4,6 +4,7 @@ package entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,12 +20,17 @@ public class Organization {
     private String o_description;
 
     @OneToMany
-    private List<Member> members;
+    private List<Member> o_members;
 
     @OneToOne
     private Contact contact;
 
     public Organization() {
+        this.o_members = new ArrayList<>();
+    }
+
+    public void addMember(Member member){
+        this.o_members.add(member);
     }
 
     public Organization(String o_name, String o_description) {
