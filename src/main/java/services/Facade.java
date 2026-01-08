@@ -24,6 +24,7 @@ public class Facade {
 
     // CHECK AND REGISTER PEOPLE
 
+    //
     public Member checkMember(String login, String password) {
         // Search for a member in the Member table
         try {
@@ -102,6 +103,7 @@ public class Facade {
         return null;
     }
 
+    //TODO corriger l'utilisation de getSingleResult après le merge
     public void deleteMember(String login){
         Query q = em.createQuery("SELECT m From Member m where m.m_login= :login",Member.class);
         q.setParameter("login",login);
@@ -122,8 +124,40 @@ public class Facade {
         }
     }
 
-    // OFFERS
+    //Category
+    public Category createCategory(String c_name) {
+        List<Category> res = em.createQuery(
+                        "SELECT c FROM Category c WHERE c.c_name = :c_name",
+                        Category.class
+                )
+                .setParameter("c_name", c_name)
+                .getResultList();
 
+        if (res.isEmpty()) {
+            Category c = new Category(c_name);
+            em.persist(c);
+            return c;
+        } else {
+            return null;
+        }
+    }
+
+
+    public Category getCategoryByName(String c_name) {
+        try {
+            return em.createQuery(
+                            "SELECT c FROM Category c WHERE c.c_name = :c_name",
+                            Category.class
+                    )
+                    .setParameter("c_name", c_name)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+
+    // OFFERS
     public List<Offer> getOffersByCategory(String category) {
         // Get all the offers by category, category can be null
         if  (category == null) {

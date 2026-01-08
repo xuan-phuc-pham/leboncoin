@@ -19,7 +19,7 @@ public class Organization {
 
     private String o_description;
 
-    @OneToMany
+    @OneToMany(mappedBy = "m_organization",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Member> o_members;
 
     @OneToOne
