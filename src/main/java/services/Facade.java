@@ -1,13 +1,10 @@
 package services;
-
 import entities.*;
-
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import type.Status;
 import type.WishStatus;
-
 import java.util.*;
 
 @Service
@@ -18,17 +15,19 @@ public class Facade {
     public Facade() {
     }
 
-    // CHECK AND REGISTER PEOPLE
+    // ------------------------------
+    // CHECK AND REGISTER USERS
+    // ------------------------------
 
-    //
     public Member checkMember(String login, String password) {
-        // Search for a member in the Member table
+        // Search for a member by login and verify the password
         try {
             Query q = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class);
             q.setParameter("login", login);
 
             Member member = (Member) q.getSingleResult();
 
+            // Return the member only if the password matches
             if (member != null && member.getM_password().equals(password)) {
                 return member;
             }
@@ -44,13 +43,14 @@ public class Facade {
     }
 
     public Contact checkContact(String login, String password) {
-        // Search a contact in the Contact Table
+        // Search for a contact by login and verify the password
         try {
             Query q = em.createQuery("SELECT c FROM Contact c WHERE c.c_login = :login", Contact.class);
             q.setParameter("login", login);
 
             Contact contact = (Contact) q.getSingleResult();
 
+            // Return the contact only if the password matches
             if (contact != null && contact.getC_password().equals(password)) {
                 return contact;
             }
@@ -65,11 +65,9 @@ public class Facade {
         return null;
     }
 
-
-
     @Transactional
     public boolean registerMember(String login, String password, String firstName, String lastName, Organization organization) {
-        // Insert the member if they don't already exist in the database
+        // Register a new member if the login does not already exist
         List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
                 .setParameter("login", login)
                 .getResultList();
@@ -80,12 +78,13 @@ public class Facade {
             return true;
         }
 
+        // Return false if the member already exists
         return false;
     }
 
     @Transactional
     public Contact registerContact(String login, String password, String firstName, String lastName, String organizationName, String organizationDescription) {
-        // Insert the contact if it doesn't already exist in the database
+        // Register a new contact if the login does not already exist
         List<Contact> results = em.createQuery("SELECT c FROM Contact c WHERE c.c_login = :login", Contact.class)
                 .setParameter("login", login)
                 .getResultList();
@@ -93,36 +92,52 @@ public class Facade {
         if (results.isEmpty()) {
             Contact contact = new Contact(login, password, firstName, lastName, organizationName, organizationDescription);
             em.persist(contact);
-            em.persist(contact.getC_organization());
+            em.persist(contact.getC_organization()); // Persist the associated organization
             return contact;
         }
+
+        // Return null if the contact already exists
         return null;
     }
 
-    //TODO corriger l'utilisation de getSingleResult après le merge
+    // ------------------------------
+    // DELETE USERS
+    // ------------------------------
+    @Transactional
     public void deleteMember(String login){
-        Query q = em.createQuery("SELECT m From Member m where m.m_login= :login",Member.class);
-        q.setParameter("login",login);
-        Member member = (Member) q.getSingleResult();
+        // Find member(s) by login
+        List<Member> members = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
+                .setParameter("login", login)
+                .getResultList();
 
-        if(member != null){
-            em.remove(member);
+        // If member exists, remove it (should be at most 1 if login is unique)
+        if (!members.isEmpty()) {
+            em.remove(members.getFirst());
         }
     }
 
     @Transactional
     public void deleteContact(String login){
-        Query q = em.createQuery("SELECT c From Contact c where c.c_login= :login",Contact.class);
-        q.setParameter("login",login);
-        Contact contact = (Contact) q.getSingleResult();
+        // Find contact(s) by login
+        List<Contact> contacts = em.createQuery(
+                        "SELECT c FROM Contact c WHERE c.c_login = :login",
+                        Contact.class)
+                .setParameter("login", login)
+                .getResultList();
 
-        if(contact != null){
-            em.remove(contact);
+        // Remove the contact if it exists (login should be unique)
+        if (!contacts.isEmpty()) {
+            em.remove(contacts.getFirst());
         }
     }
 
-    //Category
+
+    // ------------------------------
+    // CATEGORY MANAGEMENT
+    // ------------------------------
+
     public Category createCategory(String c_name) {
+        // Create a new category if it doesn't already exist
         List<Category> res = em.createQuery(
                         "SELECT c FROM Category c WHERE c.c_name = :c_name",
                         Category.class
@@ -135,12 +150,13 @@ public class Facade {
             em.persist(c);
             return c;
         } else {
+            // Return null if the category already exists
             return null;
         }
     }
 
-
     public Category getCategoryByName(String c_name) {
+        // Retrieve a category by name or return null if not found
         try {
             return em.createQuery(
                             "SELECT c FROM Category c WHERE c.c_name = :c_name",
@@ -153,15 +169,18 @@ public class Facade {
         }
     }
 
-
+    // ------------------------------
     // OFFERS
+    // ------------------------------
+
     public List<Offer> getOffersByCategory(String category) {
-        // Get all the offers by category, category can be null
+        // Get all active offers for the given category
+        // If category is null, return all active offers
         if  (category == null) {
             return em.createQuery("SELECT o FROM Offer o WHERE o.of_status = 'ACTIVE' ORDER BY o.of_date",  Offer.class).getResultList();
         }
 
-        // Verify if the category exists
+        // Check if the category exists
         Long count = em.createQuery(
                         "SELECT COUNT(c) FROM Category c WHERE c.c_name = :category",
                         Long.class)
@@ -172,6 +191,7 @@ public class Facade {
             throw new IllegalArgumentException("Category '" + category + "' doesn't exist");
         }
 
+        // Return all active offers for the given category ordered by date
         return em.createQuery(
                         "SELECT o FROM Offer o " +
                                 "JOIN o.of_categories c " +
@@ -184,9 +204,8 @@ public class Facade {
                 .getResultList();
     }
 
-
     public List<Offer> getOffersByName(String keyword){
-        // Get all the offers that have the keyword in their name
+        // Get all offers that contain the keyword in their name (case-insensitive)
         if (keyword == null || keyword.isBlank()) {
             return List.of();
         }
@@ -201,9 +220,9 @@ public class Facade {
     }
 
     public boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
-        // Allowed a Contact to publish an Offer if the name is different than any others
+        // Allow a contact to post a new offer if no offer with the same name exists
 
-        // First, we verify than there is no other offer with the same name
+        // Check for duplicate offer names
         Long count = em.createQuery(
                         "SELECT COUNT(o) FROM Offer o WHERE LOWER(o.of_name) = LOWER(:name)",
                         Long.class
@@ -218,13 +237,12 @@ public class Facade {
         Offer offer = new Offer(contact, name, description, categories);
         em.persist(offer);
         return true;
-
     }
 
-    //Return false if there are no wishes to accept
     public boolean validateOffer(Offer offer){
-        List<Wish> wishes = getWishesByOffer(offer.getOf_id()); //doit renvoyer les éléments dans l'ordre
-        if(wishes !=null){
+        // Accept the first wish and reject the others for a given offer
+        List<Wish> wishes = getWishesByOffer(offer.getOf_id()); // must return the wishes in order
+        if(wishes != null){
             Wish accepted_wish = wishes.getFirst();
             accepted_wish.setW_status(WishStatus.ACCEPTED);
             wishes.remove(accepted_wish);
@@ -235,40 +253,21 @@ public class Facade {
             return true;
         }
         else{
+            // No wishes found for this offer
             return false;
         }
     }
 
-    public int nbOffersByOrganizations(Organization organization){
-        // Get the offers' number published by the organization
-        return 1;
-    }
-
-    public int nbOffersWinsByOrganization(Category category){
-        // Get the number of offers wins by the Organization
-        return 1;
-    }
-
-
-    public boolean checkLoginPassword(String login, String password) {
-        Query q = em.createQuery("SELECT m From Member m where m.m_login= :login");
-        q.setParameter("login",login);
-        Member m = null;
-        try{
-            m = (Member)q.getSingleResult();
-        } catch(Exception e){
-            return false;
-        }
-        if(m != null){
-            return m.getM_password().equals(password);
-        }
-        else {
-            return false;
-        }
-    }
+    // ------------------------------
+    // WISH MANAGEMENT
+    // ------------------------------
 
     public List<Wish> getWishesByMember(int member_id){
-        TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_status=:stat", Wish.class);
+        // Get all pending wishes for a given member
+        TypedQuery<Wish> q = em.createQuery(
+                "SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_status=:stat",
+                Wish.class
+        );
         q.setParameter("m_id", member_id);
         q.setParameter("stat", WishStatus.AWAITING);
 
@@ -276,29 +275,33 @@ public class Facade {
     }
 
     public List<Wish> getWishesByOffer(int offer_id){
-        TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_offer.of_id=:of_id AND w.w_status=:stat", Wish.class);
+        // Get all pending wishes for a given offer
+        TypedQuery<Wish> q = em.createQuery(
+                "SELECT w FROM Wish w WHERE w.w_offer.of_id=:of_id AND w.w_status=:stat",
+                Wish.class
+        );
         q.setParameter("of_id", offer_id);
         q.setParameter("stat", WishStatus.AWAITING);
 
         return q.getResultList();
     }
 
-    //Functions for wishes
-
-    //Adds a wish to an offer
-    //Return false if the wish can't be created, true otherwise
     public Wish findWish(Member member, Offer offer){
-        Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status", Wish.class);
+        // Find a pending wish for a member and a specific offer
+        Query q = em.createQuery(
+                "SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status",
+                Wish.class
+        );
         q.setParameter("m_id", member.getM_id());
         q.setParameter("o_id", offer.getOf_id());
         q.setParameter("o_status", WishStatus.AWAITING);
-        return (Wish)q.getSingleResult();
+        return (Wish) q.getSingleResult();
     }
 
     public boolean createWish(Member member, Offer offer){
+        // Create a new wish for a member on a given offer if it doesn't already exist
         boolean wish_exists = findWish(member, offer) != null;
         if(wish_exists){
-            //This member already made a wish for this offer
             return false;
         }
         else {
@@ -309,35 +312,35 @@ public class Facade {
     }
 
     public boolean cancelWish(Member member, Offer offer){
+        // Cancel a pending wish for a member on a given offer
         Wish wish = findWish(member, offer);
         if(wish == null){
-            //This member does not have an awaiting wish for this offer
             return false;
         }
         else {
-            //The wish status changes to CANCELED
             wish.setW_status(WishStatus.CANCELED);
             return true;
         }
     }
 
     public int getWishRank(Member member, Offer offer){
+        // Get the rank/order of a member's wish among all pending wishes for the offer
         Wish wish = findWish(member, offer);
         if(wish != null){
-            TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status ORDER BY w.w_date", Wish.class);
+            TypedQuery<Wish> q = em.createQuery(
+                    "SELECT w FROM Wish w WHERE w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status ORDER BY w.w_date",
+                    Wish.class
+            );
             q.setParameter("o_id", offer.getOf_id());
             q.setParameter("o_status", WishStatus.AWAITING);
             List<Wish> wishes = q.getResultList();
-            for(int i = 0; i<wishes.size();i++){
+            for(int i = 0; i < wishes.size(); i++){
                 if(wishes.get(i).getW_id() == wish.getW_id()){
                     return i;
                 }
             }
         }
-        //This member does not have an awaiting wish for this offer
+        // Member has no pending wish for this offer
         return -1;
     }
-
-
-
 }
