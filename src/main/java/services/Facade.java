@@ -5,11 +5,10 @@ import entities.*;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import type.Status;
 import type.WishStatus;
 
 import java.util.*;
-
-import static type.WishStatus.AWAITING;
 
 @Service
 public class Facade {
@@ -146,7 +145,6 @@ public class Facade {
                 .getResultList();
     }
 
-    //TODO normalement il faudrait passer l'ID de contact pour faire comme une vraie structure web
     private boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
         // Allowed a Contact to publish an Offer if the name is different than any others
 
@@ -163,10 +161,27 @@ public class Facade {
         }
 
         Offer offer = new Offer(contact, name, description, categories);
-
         em.persist(offer);
         return true;
 
+    }
+
+    //Return false if there are no wishes to accept
+    public boolean validateOffer(Offer offer){
+        List<Wish> wishes = getWishesByOffer(offer.getOf_id()); //doit renvoyer les éléments dans l'ordre
+        if(wishes !=null){
+            Wish accepted_wish = wishes.getFirst();
+            accepted_wish.setW_status(WishStatus.ACCEPTED);
+            wishes.remove(accepted_wish);
+            for(Wish wish : wishes){
+                wish.setW_status(WishStatus.REJECTED);
+            }
+            offer.setOf_status(Status.ARCHIVED);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public int nbOffersByOrganizations(Organization organization){
@@ -197,44 +212,20 @@ public class Facade {
         }
     }
 
-    //TODO surement a supprimer
-    public Integer findIdMemberByLogin(String login) {
-        Query q = em.createQuery("SELECT m.m_id From Member m where m.m_login= :login", Integer.class);
-        q.setParameter("login",login);
-        Integer mem_id = null;
-        try {
-            mem_id = (Integer)q.getSingleResult();
-        } catch(Exception e){
-            return null;
-        }
-        return mem_id;
-    }
-
-
-    //TODO je pense qu'on peut supprimer cette fonction, j'en ai fait une findWish qui est très similaire
-    public boolean alreadySubmitted(int member_id, int offer_id) {
-        Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_status=:stat", Wish.class);
+    public List<Wish> getWishesByMember(int member_id){
+        TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_status=:stat", Wish.class);
         q.setParameter("m_id", member_id);
-        q.setParameter("o_id", offer_id);
-        q.setParameter("stat", AWAITING);
-        try {
-            return (Wish)q.getSingleResult() != null;
-        } catch (NoResultException e){
-            return false;
-        }
-    }
+        q.setParameter("stat", WishStatus.AWAITING);
 
-    public List<Wish> getWishesByMember(int mem_id){
-        Member m = em.find(Member.class,mem_id);
-        return m.getM_wishes();
-        //TODO peut être trier pour avoir que les wishes actifs
-
+        return q.getResultList();
     }
 
     public List<Wish> getWishesByOffer(int offer_id){
-        Offer of = em.find(Offer.class,offer_id);
-        return of.getOf_wishes();
-        //TODO peut être trier pour avoir que les wishes actifs
+        TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_offer.of_id=:of_id AND w.w_status=:stat", Wish.class);
+        q.setParameter("of_id", offer_id);
+        q.setParameter("stat", WishStatus.AWAITING);
+
+        return q.getResultList();
     }
 
     //Functions for wishes
@@ -257,11 +248,12 @@ public class Facade {
         }
         else {
             Wish wish = new Wish(offer, member);
+            em.persist(wish);
             return true;
         }
     }
 
-    public boolean deleteWish(Member member, Offer offer){
+    public boolean cancelWish(Member member, Offer offer){
         Wish wish = findWish(member, offer);
         if(wish == null){
             //This member does not have an awaiting wish for this offer
@@ -290,12 +282,6 @@ public class Facade {
         //This member does not have an awaiting wish for this offer
         return -1;
     }
-
-
-
-
-
-
 
 
 

@@ -2,7 +2,7 @@ package type;
 
 public enum Status {
     ACTIVE,
-    ACCEPTED,
+    ARCHIVED,
     CANCELLED,
 }
 
