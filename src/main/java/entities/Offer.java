@@ -36,14 +36,17 @@ public class Offer {
     public Offer() {
     }
 
-    public Offer(Contact of_contact, Status of_status, LocalDateTime of_date, String of_name, String of_description) {
+    public Offer(Contact of_contact, String of_name, String of_description, Set<Category> of_categories) {
         this.of_contact = of_contact;
-        this.of_status = of_status;
-        this.of_date = of_date;
+        this.of_status = Status.ACTIVE;
+        this.of_date = LocalDateTime.now();
         this.of_name = of_name;
         this.of_description = of_description;
+        this.of_categories = of_categories;
+        this.of_contact.addOffer(this);
     }
 
+    //Getters and setters
     public Status getStatus() {
         return of_status;
     }

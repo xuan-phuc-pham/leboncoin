@@ -1,7 +1,7 @@
 package type;
 
 public enum WishStatus {
-    DELIVERED,
+    AWAITING,
     REJECTED,
     ACCEPTED,
     CANCELED

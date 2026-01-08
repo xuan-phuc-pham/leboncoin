@@ -2,6 +2,7 @@ package entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,11 +31,18 @@ public class Member {
     public Member() {
     }
 
-    public Member(String m_login, String m_password, String m_firstName, String m_lastName) {
+    public Member(String m_login, String m_password, String m_firstName, String m_lastName, Organization m_organization) {
         this.m_login = m_login;
         this.m_password = m_password;
         this.m_firstName = m_firstName;
         this.m_lastName = m_lastName;
+        this.m_organization = m_organization;
+        this.m_organization.addMember(this);
+        this.m_wishes = new ArrayList<>();
+    }
+
+    public void addWish(Wish wish){
+        this.m_wishes.add(wish);
     }
 
     public int getM_id() {

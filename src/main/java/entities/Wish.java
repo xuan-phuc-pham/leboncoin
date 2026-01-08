@@ -24,11 +24,12 @@ public class Wish {
     public Wish() {
     }
 
-    public Wish(LocalDateTime w_date, WishStatus w_status, Offer w_offer, Member w_member) {
-        this.w_date = w_date;
-        this.w_status = w_status;
+    public Wish(Offer w_offer, Member w_member) {
+        this.w_date = LocalDateTime.now();
+        this.w_status = WishStatus.AWAITING;
         this.w_offer = w_offer;
         this.w_member = w_member;
+        this.w_member.addWish(this);
     }
 
     public int getW_id() {

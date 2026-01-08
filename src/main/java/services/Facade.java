@@ -2,18 +2,14 @@ package services;
 
 import entities.*;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import type.Status;
+import type.WishStatus;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
-import static type.WishStatus.DELIVERED;
+import static type.WishStatus.AWAITING;
 
 @Service
 public class Facade {
@@ -74,12 +70,13 @@ public class Facade {
 
     @Transactional
     public boolean registerMember(Member member) {
-        // Insert the member if they doesn't already exist in the database
+        // Insert the member if they don't already exist in the database
         List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
                 .setParameter("login", member.getM_login())
                 .getResultList();
 
         if (results.isEmpty()) {
+            //TODO passer en paramètre les variables pour member et le créer ici
             em.persist(member);
             return true;
         }
@@ -95,6 +92,7 @@ public class Facade {
                 .getResultList();
 
         if (results.isEmpty()) {
+            //TODO pareil que pour member
             em.persist(contact);
             return true;
         }
@@ -137,14 +135,15 @@ public class Facade {
         // Get all the offers that have the keyword in their name
         return em.createQuery(
                         "SELECT o FROM Offer o " +
-                                "WHERE LOWER(o.ofName) LIKE LOWER(:keyword)",
+                                "WHERE LOWER(o.of_name) LIKE LOWER(:keyword)",
                         Offer.class
                 )
                 .setParameter("keyword", "%" + keyword + "%")
                 .getResultList();
     }
 
-    private boolean postOffer(Set<Category> offerCategories, String offerName, String description){
+    //TODO normalement il faudrait passer l'ID de contact pour faire comme une vraie structure web
+    private boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
         // Allowed a Contact to publish an Offer if the name is different than any others
 
         // First, we verify than there is no other offer with the same name
@@ -152,20 +151,14 @@ public class Facade {
                         "SELECT COUNT(o) FROM Offer o WHERE LOWER(o.of_name) = LOWER(:name)",
                         Long.class
                 )
-                .setParameter("name", offerName)
+                .setParameter("name", name)
                 .getSingleResult();
 
         if (count > 0) {
             return false;
         }
 
-        // Create the offer
-        Offer offer = new Offer();
-        offer.setOf_name(offerName);
-        offer.setOf_categories(offerCategories);
-        offer.setOf_description(description);
-        offer.setOf_date(LocalDateTime.now());
-        offer.setOf_status(Status.ACTIVE);
+        Offer offer = new Offer(contact, name, description, categories);
 
         em.persist(offer);
         return true;
@@ -183,8 +176,9 @@ public class Facade {
     }
 
 
-    public boolean checkLP(String login, String password) {
-        Query q = em.createQuery("SELECT m From Member m where m.m_login='"+login+"'");
+    public boolean checkLoginPassword(String login, String password) {
+        Query q = em.createQuery("SELECT m From Member m where m.m_login= :login");
+        q.setParameter("login",login);
         Member m = null;
         try{
             m = (Member)q.getSingleResult();
@@ -199,8 +193,10 @@ public class Facade {
         }
     }
 
-    public Integer retrieveMemberId(String login) {
-        Query q = em.createQuery("SELECT m.m_id From Member m where m.m_login='"+login+"'", Integer.class);
+    //TODO surement a supprimer
+    public Integer findIdMemberByLogin(String login) {
+        Query q = em.createQuery("SELECT m.m_id From Member m where m.m_login= :login", Integer.class);
+        q.setParameter("login",login);
         Integer mem_id = null;
         try {
             mem_id = (Integer)q.getSingleResult();
@@ -211,12 +207,12 @@ public class Facade {
     }
 
 
-
+    //TODO je pense qu'on peut supprimer cette fonction, j'en ai fait une findWish qui est très similaire
     public boolean alreadySubmitted(int member_id, int offer_id) {
         Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_status=:stat", Wish.class);
         q.setParameter("m_id", member_id);
         q.setParameter("o_id", offer_id);
-        q.setParameter("stat", DELIVERED);
+        q.setParameter("stat", AWAITING);
         try {
             return (Wish)q.getSingleResult() != null;
         } catch (NoResultException e){
@@ -224,41 +220,75 @@ public class Facade {
         }
     }
 
-//    @Transactional
-//    public boolean wish(int mem_id, int of_id){
-//        if(!isMemberInOrganisation(mem_id, of_id)) {//
-//            Member m = em.find(Member.class,mem_id);
-//            Offer o = em.find(Offer.class,of_id);
-//            Wish d = new Wish(
-//                    LocalDateTime.now(),
-//                    DELIVERED,
-//                    o,
-//                    m
-//            );
-//            em.persist(d);
-//            return true;
-//        } else{
-//            return false;
-//        }
-//    }
-
-//    public boolean isMemberInOrganisation(int mem_id, int of_id){        // Check if a member see the offer in the same org
-//        Member m = em.find(Member.class,mem_id);
-//        Offer o = em.find(Offer.class,of_id);
-//        return m.getM_organisation().getO_id() == o.getOf_contact().getR_organisation().getO_id();
-//    }
-
     public List<Wish> getWishesByMember(int mem_id){
         Member m = em.find(Member.class,mem_id);
-        List<Wish> wishes = m.getM_wishes();
-        return wishes;
+        return m.getM_wishes();
+        //TODO peut être trier pour avoir que les wishes actifs
+
     }
 
     public List<Wish> getWishesByOffer(int offer_id){
         Offer of = em.find(Offer.class,offer_id);
-        List<Wish> wishes = of.getOf_wishes();
-        return wishes;
+        return of.getOf_wishes();
+        //TODO peut être trier pour avoir que les wishes actifs
     }
+
+    //Functions for wishes
+
+    //Adds a wish to an offer
+    //Return false if the wish can't be created, true otherwise
+    public Wish findWish(Member member, Offer offer){
+        Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status", Wish.class);
+        q.setParameter("m_id", member.getM_id());
+        q.setParameter("o_id", offer.getOf_id());
+        q.setParameter("o_status", WishStatus.AWAITING);
+        return (Wish)q.getSingleResult();
+    }
+
+    public boolean createWish(Member member, Offer offer){
+        boolean wish_exists = findWish(member, offer) != null;
+        if(wish_exists){
+            //This member already made a wish for this offer
+            return false;
+        }
+        else {
+            Wish wish = new Wish(offer, member);
+            return true;
+        }
+    }
+
+    public boolean deleteWish(Member member, Offer offer){
+        Wish wish = findWish(member, offer);
+        if(wish == null){
+            //This member does not have an awaiting wish for this offer
+            return false;
+        }
+        else {
+            //The wish status changes to CANCELED
+            wish.setW_status(WishStatus.CANCELED);
+            return true;
+        }
+    }
+
+    public int getWishRank(Member member, Offer offer){
+        Wish wish = findWish(member, offer);
+        if(wish != null){
+            TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status ORDER BY w.w_date", Wish.class);
+            q.setParameter("o_id", offer.getOf_id());
+            q.setParameter("o_status", WishStatus.AWAITING);
+            List<Wish> wishes = q.getResultList();
+            for(int i = 0; i<wishes.size();i++){
+                if(wishes.get(i).getW_id() == wish.getW_id()){
+                    return i;
+                }
+            }
+        }
+        //This member does not have an awaiting wish for this offer
+        return -1;
+    }
+
+
+
 
 
 
