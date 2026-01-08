@@ -19,7 +19,7 @@ public class Organization {
 
     private String o_description;
 
-    @OneToMany
+    @OneToMany(mappedBy = "m_organization",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Member> o_members;
 
     @OneToOne
@@ -37,6 +37,7 @@ public class Organization {
         this.o_name = o_name;
         this.o_description = o_description;
         this.o_contact = o_contact;
+        this.o_members = new ArrayList<Member>();
     }
 
     public String getO_name() {

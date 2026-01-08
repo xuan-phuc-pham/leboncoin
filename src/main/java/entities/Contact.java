@@ -20,7 +20,7 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer c_id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Organization c_organization;
 
     @OneToMany(mappedBy = "of_contact",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)

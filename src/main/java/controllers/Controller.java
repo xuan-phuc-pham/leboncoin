@@ -9,7 +9,9 @@ import org.springframework.web.bind.support.SessionStatus;
 import services.Facade;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -36,6 +38,18 @@ public class Controller {
              "Hogwarts",
              "The scottish wizarding school"
         );
+
+        if (contact == null){
+            facade.deleteContact("adumbledore");
+            contact = facade.registerContact(
+                    "adumbledore",
+                    "fizwizbiz",
+                    "Albus",
+                    "Dumbledore",
+                    "Hogwarts",
+                    "The scottish wizarding school"
+            );
+        }
 
         // TEST ENREGISTREMENT DES MEMBRES
 
@@ -105,9 +119,9 @@ public class Controller {
 
         try {
             String login = "tholland";
-            String password = "expelliarmus";
-            String lastName = "Potter";
-            String firstName = "Harry";
+            String password = "spidey";
+            String lastName = "Holland";
+            String firstName = "Tom";
             Organization organization = contact.getC_organization();
             boolean created = facade.registerMember(login, password, lastName, firstName,organization );
 
@@ -184,6 +198,109 @@ public class Controller {
         } catch (Exception e) {
             report.add(new TestResult("Get Offers From a Non Existent Category", "OK", "Correctly rejected: " + e.getMessage()));
         }
+
+        try {
+            String name = "Football";
+            var offers = facade.getOffersByName(name);
+            report.add(new TestResult(
+                    "Get Offers By Name",
+                    "OK",
+                    "Found " + offers.size() + " offers with name: " + name
+            ));
+        } catch (Exception e) {
+            report.add(new TestResult(
+                    "Get Offers By Name",
+                    "KO",
+                    e.getMessage()
+            ));
+        }
+
+
+        try {
+            String name = "Inexistant123";
+            var offers = facade.getOffersByName(name);
+
+            if (offers.isEmpty()) {
+                report.add(new TestResult(
+                        "Get Offers By Non Existent Name",
+                        "OK",
+                        "No offers found for name: " + name
+                ));
+            } else {
+                report.add(new TestResult(
+                        "Get Offers By Non Existent Name",
+                        "KO",
+                        "Expected 0 offers but found " + offers.size()
+                ));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult(
+                    "Get Offers By Non Existent Name",
+                    "KO",
+                    e.getMessage()
+            ));
+        }
+
+
+        try {
+            var offers = facade.getOffersByName(null);
+
+            if (offers.isEmpty()) {
+                report.add(new TestResult(
+                        "Get Offers By Null Name",
+                        "OK",
+                        "No offers returned for null keyword"
+                ));
+            } else {
+                report.add(new TestResult(
+                        "Get Offers By Null Name",
+                        "KO",
+                        "Expected 0 offers but found " + offers.size()
+                ));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult(
+                    "Get Offers By Null Name",
+                    "KO",
+                    "Unexpected exception: " + e.getMessage()
+            ));
+        }
+
+        try {
+            Contact contactWeasley = facade.registerContact(
+                    "rweasley", "expelliarmus", "Ron", "Weasley",
+                    "Hogwarts", "Magic School"
+            );
+
+            Set<Category> categories = new HashSet<>();
+
+            String name = "Quidditch Match";
+            String description = "Friendly game in Hogwarts";
+
+            boolean result = facade.postOffer(contactWeasley, categories, name, description);
+
+            if (result) {
+                report.add(new TestResult(
+                        "Post Offer With New Name",
+                        "OK",
+                        "Successfully posted offer: " + name
+                ));
+            } else {
+                report.add(new TestResult(
+                        "Post Offer With New Name",
+                        "KO",
+                        "Failed to post offer even though name was unique"
+                ));
+            }
+        } catch (Exception e) {
+            report.add(new TestResult(
+                    "Post Offer With New Name",
+                    "KO",
+                    e.getMessage()
+            ));
+        }
+
+
 
         try {
             int testId = 2;

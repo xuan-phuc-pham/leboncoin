@@ -20,8 +20,6 @@ public class Facade {
     }
 
 
-
-
     // CHECK AND REGISTER PEOPLE
 
     public Member checkMember(String login, String password) {
@@ -112,6 +110,7 @@ public class Facade {
         }
     }
 
+    @Transactional
     public void deleteContact(String login){
         Query q = em.createQuery("SELECT c From Contact c where c.c_login= :login",Contact.class);
         q.setParameter("login",login);
@@ -154,8 +153,12 @@ public class Facade {
     }
 
 
-    private List<Offer> getOffersByName(String keyword){
+    public List<Offer> getOffersByName(String keyword){
         // Get all the offers that have the keyword in their name
+        if (keyword == null || keyword.isBlank()) {
+            return List.of();
+        }
+
         return em.createQuery(
                         "SELECT o FROM Offer o " +
                                 "WHERE LOWER(o.of_name) LIKE LOWER(:keyword)",
@@ -165,7 +168,7 @@ public class Facade {
                 .getResultList();
     }
 
-    private boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
+    public boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
         // Allowed a Contact to publish an Offer if the name is different than any others
 
         // First, we verify than there is no other offer with the same name
