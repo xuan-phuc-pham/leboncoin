@@ -22,7 +22,6 @@ public class Facade {
 
     // CHECK AND REGISTER PEOPLE
 
-    //
     public Member checkMember(String login, String password) {
         // Search for a member in the Member table
         try {
@@ -66,7 +65,6 @@ public class Facade {
 
         return null;
     }
-
 
 
     @Transactional
@@ -223,7 +221,6 @@ public class Facade {
 
     }
 
-    //Return false if there are no wishes to accept
     public boolean validateOffer(Offer offer){
         List<Wish> wishes = getWishesByOffer(offer.getOf_id()); //doit renvoyer les éléments dans l'ordre
         if(wishes !=null){
@@ -241,34 +238,8 @@ public class Facade {
         }
     }
 
-    public int nbOffersByOrganizations(Organization organization){
-        // Get the offers' number published by the organization
-        return 1;
-    }
 
-    public int nbOffersWinsByOrganization(Category category){
-        // Get the number of offers wins by the Organization
-        return 1;
-    }
-
-
-    public boolean checkLoginPassword(String login, String password) {
-        Query q = em.createQuery("SELECT m From Member m where m.m_login= :login");
-        q.setParameter("login",login);
-        Member m = null;
-        try{
-            m = (Member)q.getSingleResult();
-        } catch(Exception e){
-            return false;
-        }
-        if(m != null){
-            return m.getM_password().equals(password);
-        }
-        else {
-            return false;
-        }
-    }
-
+    //Wish
     public List<Wish> getWishesByMember(int member_id){
         TypedQuery<Wish> q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_status=:stat", Wish.class);
         q.setParameter("m_id", member_id);
@@ -285,10 +256,6 @@ public class Facade {
         return q.getResultList();
     }
 
-    //Functions for wishes
-
-    //Adds a wish to an offer
-    //Return false if the wish can't be created, true otherwise
     public Wish findWish(Member member, Offer offer){
         Query q = em.createQuery("SELECT w FROM Wish w WHERE w.w_member.m_id=:m_id AND w.w_offer.of_id=:o_id AND w.w_offer.of_status=:o_status", Wish.class);
         q.setParameter("m_id", member.getM_id());
@@ -339,7 +306,4 @@ public class Facade {
         //This member does not have an awaiting wish for this offer
         return -1;
     }
-
-
-
 }
