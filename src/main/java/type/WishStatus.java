@@ -4,5 +4,5 @@ public enum WishStatus {
     DELIVERED,
     REJECTED,
     ACCEPTED,
-    CANCELED
+    CANCELED,
 }

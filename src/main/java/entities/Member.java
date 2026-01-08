@@ -81,8 +81,6 @@ public class Member {
         this.m_lastName = m_lastName;
     }
 
-
-
     public Organization getM_organisation() {
         return m_organization;
     }

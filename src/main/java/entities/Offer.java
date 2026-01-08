@@ -19,7 +19,7 @@ public class Offer {
     private Contact of_contact;
 
     @ManyToMany
-    private Set<Category> of_categories;
+    private List<Category> of_categories;
 
     @OneToMany(mappedBy = "w_offer", fetch = FetchType.EAGER)
     private List<Wish> of_wishes;
@@ -80,11 +80,11 @@ public class Offer {
         this.of_contact = of_contact;
     }
 
-    public Set<Category> getOf_categories() {
+    public List<Category> getOf_categories() {
         return of_categories;
     }
 
-    public void setOf_categories(Set<Category> of_categories) {
+    public void setOf_categories(List<Category> of_categories) {
         this.of_categories = of_categories;
     }
 

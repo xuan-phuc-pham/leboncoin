@@ -21,7 +21,7 @@ public class Organization {
     @OneToMany
     private List<Member> members;
 
-    @OneToOne
+    @OneToOne(mappedBy = "c_organization", cascade = CascadeType.ALL)
     private Contact contact;
 
     public Organization() {
@@ -50,6 +50,22 @@ public class Organization {
 
     public int getO_id() {
         return o_id;
+    }
+
+    public List<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Member> members) {
+        this.members = members;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 }
 

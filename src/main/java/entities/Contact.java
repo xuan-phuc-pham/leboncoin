@@ -7,6 +7,8 @@ import java.util.List;
 @Entity
 public class Contact {
 
+    @Id
+    private int c_id;
 
     @Column(unique = true)
     private String c_login;
@@ -15,14 +17,19 @@ public class Contact {
     private String c_firstName;
     private String c_lastName;
 
-    @Id
+
+    @MapsId
     @OneToOne
     private Organization c_organization;
 
-    @OneToMany(mappedBy = "of_contact")
+    @OneToMany(mappedBy = "of_contact", fetch = FetchType.EAGER)
     private List<Offer> c_offers;
 
     public Contact() {
+    }
+
+    public int getC_id() {
+        return c_id;
     }
 
     public Contact(String c_login, String c_password, String c_firstName, String c_lastName, Organization c_organization) {
