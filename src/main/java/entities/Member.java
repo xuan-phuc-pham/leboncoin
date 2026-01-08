@@ -24,8 +24,7 @@ public class Member {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Organization m_organization;
-
-    @OneToMany(mappedBy = "w_member", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "w_member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Wish> m_wishes;
 
     public Member() {

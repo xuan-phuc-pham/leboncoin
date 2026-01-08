@@ -23,7 +23,7 @@ public class Contact {
     @OneToOne
     private Organization c_organization;
 
-    @OneToMany(mappedBy = "of_contact")
+    @OneToMany(mappedBy = "of_contact",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Offer> c_offers;
 
     public Contact() {

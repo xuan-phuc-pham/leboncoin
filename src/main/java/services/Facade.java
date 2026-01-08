@@ -102,6 +102,26 @@ public class Facade {
         return null;
     }
 
+    public void deleteMember(String login){
+        Query q = em.createQuery("SELECT m From Member m where m.m_login= :login",Member.class);
+        q.setParameter("login",login);
+        Member member = (Member) q.getSingleResult();
+
+        if(member != null){
+            em.remove(member);
+        }
+    }
+
+    public void deleteContact(String login){
+        Query q = em.createQuery("SELECT c From Contact c where c.c_login= :login",Contact.class);
+        q.setParameter("login",login);
+        Contact contact = (Contact) q.getSingleResult();
+
+        if(contact != null){
+            em.remove(contact);
+        }
+    }
+
     // OFFERS
 
     public List<Offer> getOffersByCategory(String category) {
