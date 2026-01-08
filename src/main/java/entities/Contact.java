@@ -28,13 +28,13 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(Integer c_id ,String c_login, String c_password, String c_firstName, String c_lastName, Organization c_organization) {
+    public Contact(Integer c_id ,String c_login, String c_password, String c_firstName, String c_lastName, String o_name, String o_description) {
         this.c_id = c_id;
         this.c_login = c_login;
         this.c_password = c_password;
         this.c_firstName = c_firstName;
         this.c_lastName = c_lastName;
-        this.c_organization = c_organization;
+        this.c_organization = new Organization(o_name, o_description, this);
         this.c_offers = new ArrayList<>();
     }
 

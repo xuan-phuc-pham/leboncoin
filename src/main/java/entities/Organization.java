@@ -23,7 +23,7 @@ public class Organization {
     private List<Member> o_members;
 
     @OneToOne
-    private Contact contact;
+    private Contact o_contact;
 
     public Organization() {
         this.o_members = new ArrayList<>();
@@ -33,9 +33,10 @@ public class Organization {
         this.o_members.add(member);
     }
 
-    public Organization(String o_name, String o_description) {
+    public Organization(String o_name, String o_description, Contact o_contact) {
         this.o_name = o_name;
         this.o_description = o_description;
+        this.o_contact = o_contact;
     }
 
     public String getO_name() {

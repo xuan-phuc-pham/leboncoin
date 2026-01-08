@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import type.WishStatus;
-import type.Status;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static type.WishStatus.AWAITING;
@@ -78,6 +76,7 @@ public class Facade {
                 .getResultList();
 
         if (results.isEmpty()) {
+            //TODO passer en paramètre les variables pour member et le créer ici
             em.persist(member);
             return true;
         }
@@ -93,6 +92,7 @@ public class Facade {
                 .getResultList();
 
         if (results.isEmpty()) {
+            //TODO pareil que pour member
             em.persist(contact);
             return true;
         }
@@ -142,6 +142,7 @@ public class Facade {
                 .getResultList();
     }
 
+    //TODO normalement il faudrait passer l'ID de contact pour faire comme une vraie structure web
     private boolean postOffer(Contact contact, Set<Category> categories, String name, String description){
         // Allowed a Contact to publish an Offer if the name is different than any others
 
@@ -192,7 +193,8 @@ public class Facade {
         }
     }
 
-    public Integer retrieveMemberId(String login) {
+    //TODO surement a supprimer
+    public Integer findIdMemberByLogin(String login) {
         Query q = em.createQuery("SELECT m.m_id From Member m where m.m_login= :login", Integer.class);
         q.setParameter("login",login);
         Integer mem_id = null;
@@ -218,16 +220,17 @@ public class Facade {
         }
     }
 
-    //TODO pourquoi on met pas juste le membre en paramètre
-    // de la fonction plutôt qu'aller le chercher dans la base de données
     public List<Wish> getWishesByMember(int mem_id){
         Member m = em.find(Member.class,mem_id);
         return m.getM_wishes();
+        //TODO peut être trier pour avoir que les wishes actifs
+
     }
 
     public List<Wish> getWishesByOffer(int offer_id){
         Offer of = em.find(Offer.class,offer_id);
         return of.getOf_wishes();
+        //TODO peut être trier pour avoir que les wishes actifs
     }
 
     //Functions for wishes

@@ -36,13 +36,13 @@ public class Offer {
     public Offer() {
     }
 
-    public Offer(Contact of_contact, String of_name, String of_description, Set<Category> categories) {
+    public Offer(Contact of_contact, String of_name, String of_description, Set<Category> of_categories) {
         this.of_contact = of_contact;
         this.of_status = Status.ACTIVE;
         this.of_date = LocalDateTime.now();
         this.of_name = of_name;
         this.of_description = of_description;
-        this.of_categories = categories;
+        this.of_categories = of_categories;
         this.of_contact.addOffer(this);
     }
 
