@@ -12,5 +12,9 @@ public class Category {
     @Column(unique = true)
     private String c_name;
 
+    public Category(){}
 
+    public Category(String c_name){
+        this.c_name = c_name;
+    }
 }
