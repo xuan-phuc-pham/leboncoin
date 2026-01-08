@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import services.Facade;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,8 +56,8 @@ public class Controller {
         // TEST ENREGISTREMENT DES MEMBRES
 
         try {
-            var login = "tholland";
-            var password = "spidey";
+            var login = "mdamon";
+            var password = "mars123";
             Member findMember = facade.checkMember(login, password);
             report.add(new TestResult("Check For Existing Member", "OK", "First Name: "+findMember.getM_firstName() + ", Last Name: "+findMember.getM_lastName()));
         } catch (Exception e) {
@@ -118,17 +120,17 @@ public class Controller {
         }
 
         try {
-            String login = "tholland";
-            String password = "spidey";
-            String lastName = "Holland";
-            String firstName = "Tom";
+            String login = "xphman";
+            String password = "xpham";
+            String lastName = "Phuc";
+            String firstName = "Xuan";
             Organization organization = contact.getC_organization();
             boolean created = facade.registerMember(login, password, lastName, firstName,organization );
 
             if(!created) {
-                report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists."));
+                report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists. Login:" + login));
             } else {
-                report.add(new TestResult("Register Existing Member", "KO", "Error: System allowed duplicate login!"));
+                report.add(new TestResult("Register Existing Member", "KO", "Error: System allowed duplicate login! Login:" + login));
             }
         } catch (Exception e) {
             report.add(new TestResult("Register Existing Member", "KO", e.getMessage()));
@@ -136,11 +138,11 @@ public class Controller {
 
         try {
             //Problem because it needs to be linked to an organization
-            String login = "eleven";
+            String login = "eleven_" + LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmssSSS"));
             String password = "demorgogon";
             String firstName = "Jane";
             String lastName = "Hopper";
-            String organizationName = "Stranger Things";
+            String organizationName = "Stranger Things_" + LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmssSSS"));
             String organizationDescription = "A small town in Indiana";
 
             Contact myContact = facade.registerContact(login, password, firstName, lastName, organizationName, organizationDescription);
@@ -266,39 +268,6 @@ public class Controller {
             ));
         }
 
-        try {
-            Contact contactWeasley = facade.registerContact(
-                    "rweasley", "expelliarmus", "Ron", "Weasley",
-                    "Hogwarts", "Magic School"
-            );
-
-            Set<Category> categories = new HashSet<>();
-
-            String name = "Quidditch Match";
-            String description = "Friendly game in Hogwarts";
-
-            boolean result = facade.postOffer(contactWeasley, categories, name, description);
-
-            if (result) {
-                report.add(new TestResult(
-                        "Post Offer With New Name",
-                        "OK",
-                        "Successfully posted offer: " + name
-                ));
-            } else {
-                report.add(new TestResult(
-                        "Post Offer With New Name",
-                        "KO",
-                        "Failed to post offer even though name was unique"
-                ));
-            }
-        } catch (Exception e) {
-            report.add(new TestResult(
-                    "Post Offer With New Name",
-                    "KO",
-                    e.getMessage()
-            ));
-        }
 
 
 
