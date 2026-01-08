@@ -20,6 +20,9 @@ public class Facade {
     public Facade() {
     }
 
+
+
+
     // CHECK AND REGISTER PEOPLE
 
     public Member checkMember(String login, String password) {
@@ -69,14 +72,14 @@ public class Facade {
 
 
     @Transactional
-    public boolean registerMember(Member member) {
+    public boolean registerMember(String login, String password, String firstName, String lastName, Organization organization) {
         // Insert the member if they don't already exist in the database
         List<Member> results = em.createQuery("SELECT m FROM Member m WHERE m.m_login = :login", Member.class)
-                .setParameter("login", member.getM_login())
+                .setParameter("login", login)
                 .getResultList();
 
         if (results.isEmpty()) {
-            //TODO passer en paramètre les variables pour member et le créer ici
+            Member member = new Member(login, password, firstName, lastName, organization);
             em.persist(member);
             return true;
         }
@@ -85,18 +88,19 @@ public class Facade {
     }
 
     @Transactional
-    public boolean registerContact(Contact contact) {
+    public Contact registerContact(String login, String password, String firstName, String lastName, String organizationName, String organizationDescription) {
         // Insert the contact if it doesn't already exist in the database
         List<Contact> results = em.createQuery("SELECT c FROM Contact c WHERE c.c_login = :login", Contact.class)
-                .setParameter("login", contact.getC_login())
+                .setParameter("login", login)
                 .getResultList();
 
         if (results.isEmpty()) {
-            //TODO pareil que pour member
+            Contact contact = new Contact(login, password, firstName, lastName, organizationName, organizationDescription);
             em.persist(contact);
-            return true;
+            em.persist(contact.getC_organization());
+            return contact;
         }
-        return false;
+        return null;
     }
 
     // OFFERS

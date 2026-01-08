@@ -27,6 +27,16 @@ public class Controller {
     public String displayTests(Model model) {
         List<TestResult> report = new ArrayList<>();
 
+
+        Contact contact = facade.registerContact(
+                "adumbledore",
+             "fizwizbiz",
+             "Albus",
+             "Dumbledore",
+             "Hogwarts",
+             "The scottish wizarding school"
+        );
+
         // TEST ENREGISTREMENT DES MEMBRES
 
         try {
@@ -76,12 +86,13 @@ public class Controller {
         }
 
         try {
+            String login = "hpotter";
+            String password = "expelliarmus";
+            String lastName = "Potter";
+            String firstName = "Harry";
+            Organization organization = contact.getC_organization();
 
-            // Problem because we need to linked it to an organization
-            Member nonExistingMember = new Member();
-            nonExistingMember.setM_login("hpotter");
-
-            boolean created = facade.registerMember(nonExistingMember);
+            boolean created = facade.registerMember(login, password, lastName, firstName,organization );
 
             if(created) {
                 report.add(new TestResult("Register Non Existing Member", "OK", "Correctly registered the member."));
@@ -93,10 +104,12 @@ public class Controller {
         }
 
         try {
-            Member existingMember = new Member();
-            existingMember.setM_login("tholland");
-
-            boolean created = facade.registerMember(existingMember);
+            String login = "tholland";
+            String password = "expelliarmus";
+            String lastName = "Potter";
+            String firstName = "Harry";
+            Organization organization = contact.getC_organization();
+            boolean created = facade.registerMember(login, password, lastName, firstName,organization );
 
             if(!created) {
                 report.add(new TestResult("Register Existing Member", "OK", "Correctly rejected: Login already exists."));
@@ -109,12 +122,16 @@ public class Controller {
 
         try {
             //Problem because it needs to be linked to an organization
-            Contact nonExistingContact = new Contact();
-            nonExistingContact.setC_login("hpotter");
+            String login = "eleven";
+            String password = "demorgogon";
+            String firstName = "Jane";
+            String lastName = "Hopper";
+            String organizationName = "Stranger Things";
+            String organizationDescription = "A small town in Indiana";
 
-            boolean created = facade.registerContact(nonExistingContact);
+            Contact myContact = facade.registerContact(login, password, firstName, lastName, organizationName, organizationDescription);
 
-            if(created) {
+            if(myContact != null) {
                 report.add(new TestResult("Register Non Existing Contact", "OK", "Correctly registered the member."));
             } else {
                 report.add(new TestResult("Register Non Existing Contact", "KO", "Error: System didn't register the member."));
@@ -124,12 +141,16 @@ public class Controller {
         }
 
         try {
-            Contact existingContact = new Contact();
-            existingContact.setC_login("tstark");
+            String login = "tstark";
+            String password = "demorgogon";
+            String firstName = "Jane";
+            String lastName = "Hopper";
+            String organizationName = "Stranger Things";
+            String organizationDescription = "A small town in Indiana";
 
-            boolean created = facade.registerContact(existingContact);
+            Contact myContact = facade.registerContact(login, password, firstName, lastName, organizationName, organizationDescription);
 
-            if(!created) {
+            if(myContact == null) {
                 report.add(new TestResult("Register Existing Contact", "OK", "Correctly rejected: Login already exists."));
             } else {
                 report.add(new TestResult("Register Existing Contact", "KO", "Error: System allowed duplicate login!"));
